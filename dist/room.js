@@ -1558,6 +1558,7 @@ function updateChase(dt){
   }else if(c.cs==='swat'){c.pose='swat';c.ct-=dt;if(c.ct<=0)c.cs='approach';}
 }
 function updateCat(dt){
+ if(cat.flapHold){cat.time+=dt;return;}
  if(cat.flapTrip&&(typeof CatFlap!=='undefined'&&CatFlap)){cat.time+=dt;CatFlap.step(cat,roomPlan,dt);return;}
  if(cat.state==='bedWalk'){updateBedWalk(cat,dt);return;}
  if(cat.state==='bedRest'||cat.state==='bedQueue'){cat.time+=dt;if(cat.state==='bedQueue'&&freeBedSpot(cat))requestBed(cat);return;}

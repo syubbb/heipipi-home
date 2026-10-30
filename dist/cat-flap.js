@@ -110,7 +110,7 @@ function poseFrame(frame,actor,toy,plan){
   6:()=>{place(actor,f.mouth);actor.hidden=false;actor.pose='flapDuck';actor.flapSink=.2;holdToy(actor,toy,actor.x+14,actor.y-6);actor.flapTrip={phase:'emerge',flap:-70,toy,t:.4,hold:5};},
   7:()=>{place(actor,f.exit);actor.hidden=false;actor.pose='flapDuck';holdToy(actor,toy,actor.x+16,actor.y-4);actor.flapTrip={phase:'toRoom',flap:0,toy,t:.8,hold:5};}
  };
- const go=frames[frame];if(!go)return false;go();actor.z=0;actor.state='flap';return true;
+ const go=frames[frame];if(!go)return false;go();actor.z=0;actor.state='flap';actor.flapHold=true;return true;
 }
 function wood(c,d){
  const g=c.createLinearGradient(d.x,0,d.x,d.y+d.h);
