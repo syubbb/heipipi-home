@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - p1-mobile
 
 permissions:
   actions: read
@@ -22,13 +23,61 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
+      - name: Checkout main site
         uses: actions/checkout@v5
+        with:
+          ref: main
+          path: main-site
+
+      - name: Checkout mobile preview
+        uses: actions/checkout@v5
+        with:
+          ref: p1-mobile
+          path: preview-site
+
+      - name: Assemble root plus preview
+        run: |
+          set -euo pipefail
+          rm -rf artifact
+          mkdir -p artifact/preview
+          cp -a main-site/dist/. artifact/
+          if [ -e artifact/preview ] && [ -n "$(find artifact/preview -mindepth 1 -print -quit 2>/dev/null)" ]; then
+            echo "main dist must not already contain preview/" >&2
+            exit 1
+          fi
+          mkdir -p artifact/preview
+          cp -a preview-site/dist/. artifact/preview/
+          python3 - <<'PY'
+          import hashlib, os
+          def files(root, skip_preview=False):
+              out = {}
+              for dirpath, dirnames, filenames in os.walk(root):
+                  rel_dir = os.path.relpath(dirpath, root)
+                  if skip_preview and (rel_dir == "preview" or rel_dir.startswith("preview" + os.sep)):
+                      dirnames[:] = []
+                      continue
+                  for name in filenames:
+                      path = os.path.join(dirpath, name)
+                      rel = os.path.relpath(path, root)
+                      if skip_preview and (rel == "preview" or rel.startswith("preview" + os.sep)):
+                          continue
+                      digest = hashlib.sha256(open(path, "rb").read()).hexdigest()
+                      out[rel] = digest
+              return out
+          root = files("artifact", skip_preview=True)
+          main = files("main-site/dist")
+          if root != main:
+              missing = sorted(set(main) - set(root))
+              extra = sorted(set(root) - set(main))
+              changed = sorted(k for k in set(root) & set(main) if root[k] != main[k])
+              raise SystemExit(f"root is not byte-identical to main dist missing={missing} extra={extra} changed={changed}")
+          print(f"root matches main dist ({len(root)} files); preview is separate")
+          PY
 
       - name: Upload dist
         uses: actions/upload-pages-artifact@v5
         with:
-          path: dist
+          path: artifact
           include-hidden-files: true
 
       - name: Deploy to GitHub Pages
