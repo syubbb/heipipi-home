@@ -32,7 +32,7 @@ assert.equal(p.obstacles.length,3,'The litter mat adds no keep-out');
 const husky=p.toys.find(t=>t.id==='husky');assert.deepEqual([husky.x,husky.y,husky.size],[420,945,96]);
 assert.deepEqual(p.jumps.j1.at(-1),{x:415,y:439,z:160,arc:40,dur:.32});assert.equal(p.jumps.j1.at(-1).y,p.bed.walkway);
 assert.deepEqual([p.clock.x,p.clock.y],[ -60,-20]);
-assert.deepEqual([p.catFlap.flap.w,p.catFlap.flap.h],[84,84]);assert.deepEqual([p.catFlap.hit.w,p.catFlap.hit.h],[104,104]);
+assert.deepEqual([p.catFlap.flap.w,p.catFlap.flap.h],[84,84]);assert.deepEqual([p.catFlap.inner.w,p.catFlap.inner.h],[52,55]);assert.deepEqual([p.catFlap.hit.w,p.catFlap.hit.h],[136,136]);
 assert.equal(p.lookout.x,540);assert.equal(p.lookout.y,602);
 function ellipse(a,b){return ((a.x-b.x)/(a.rx+b.rx))**2+((a.y-b.y)/(a.ry+b.ry))**2<1;}
 const litterBox={x:p.litter.x,y:(p.litter.back+p.litter.front)/2,rx:p.litter.width/2,ry:(p.litter.front-p.litter.back)/2};

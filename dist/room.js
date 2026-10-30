@@ -640,7 +640,7 @@ function drawWallPhoto(c){
 function paintRoom(){
  const b=bg.getContext('2d');b.setTransform(BGS,0,0,BGS,-EX0*BGS,-EY0*BGS);
  b.fillStyle='#eee2ce';b.fillRect(EX0,EY0,EW,EH);
- if(roomPlan){RoomLayout.drawBackdrop(b,roomPlan,homePanorama);for(const f of [BOWL,WATER]){const pad=f.pad||[f.x-52,f.y-48,104,64];b.fillStyle='#c6bba8';rr(b,pad[0],pad[1],pad[2],pad[3],8);b.fill();b.strokeStyle='#e8dfcf';b.lineWidth=2;rr(b,pad[0]+2,pad[1]+2,pad[2]-4,pad[3]-4,7);b.stroke();}return;}
+ if(roomPlan){RoomLayout.drawBackdrop(b,roomPlan,homePanorama);if((typeof CatFlap!=='undefined'&&CatFlap))CatFlap.paintDoor(b,roomPlan);for(const f of [BOWL,WATER]){const pad=f.pad||[f.x-52,f.y-48,104,64];b.fillStyle='#c6bba8';rr(b,pad[0],pad[1],pad[2],pad[3],8);b.fill();b.strokeStyle='#e8dfcf';b.lineWidth=2;rr(b,pad[0]+2,pad[1]+2,pad[2]-4,pad[3]-4,7);b.stroke();}return;}
  if(desktopPanorama()){b.fillStyle='#e4cbb0';b.fillRect(EX0,EY0,EW,-EY0);WindowScene.panoramaBackdrop(b,homePanorama,{left:EX0,width:EW,floor:FT,height:H,bottom:EY0+EH,plant:homePlant,tabletopArt:homeBBackdrop,furniture:!window.RoomDetail});SUN.x=WindowScene.panoramaLayout(FT).sunX;}else if(homeBBackdrop.complete&&homeBBackdrop.naturalWidth){
   const iw=homeBBackdrop.naturalWidth,ih=homeBBackdrop.naturalHeight,wall=ih*.344;
   // Keep the chosen scenery legible on phones while keeping all existing room coordinates.
@@ -805,6 +805,8 @@ function drawCatMeal(c){
  c.save();c.fillStyle='rgba(60,30,8,.22)';c.beginPath();c.ellipse(cat.x,cat.y,60,8,0,0,Math.PI*2);c.fill();c.translate(contact.x,contact.y);c.scale(cat.face<0?-KP:KP,KP);c.drawImage(frame,-mouth.x,-mouth.y);c.restore();
 }
 function drawCat(c){
+ if(cat.hidden)return;
+ if((cat.pose==='flapDuck'||cat.pose==='flapPush')&&(typeof CatFlap!=='undefined'&&CatFlap)){CatFlap.drawCat(c,cat,IMG.black_door_gait,roomPlan);return;}
  if(roomPlan&&window.DoorGait?.draw(c,cat,IMG.black_door_gait))return;
  if(roomPlan&&['sun','window'].includes(cat.act)&&tvCats?.drawFacing(c,cat,{x:roomPlan.window.x+roomPlan.window.width/2,y:roomPlan.window.y+roomPlan.window.height/2}))return;
  if(drawTVVisit(c,cat))return;
@@ -1345,7 +1347,7 @@ function placeBedScene(force){
 function doFor(act,pose,secs,msg,then){cat.state=secs?'timed':'stay';cat.act=act;cat.pose=pose;cat.timer=secs||0;cat.then=then||null;
   cat.eyes=act==='sun'?'half':['sleep','matSleep'].includes(act)?'closed':'open';if(msg)say(msg);}
 function dropCarry(){if(!cat.carry)return;const t=cat.carry;t.carried=false;t.inBox=false;const p=freePoint(cat.x+cat.face*44,cat.y+4);t.x=p.x;t.y=p.y;t.z=14;t.vz=0;t.vx=t.vy=0;cat.carry=null;}
-function interrupt(){cancelPlayerTVVisits();cat.sleepChoice=null;cat.matVisit=null;cat.randomAction=null;if(lift.actor)endLift();cancelLiftHold();if(gather.active)stopGather();if(cat.facilityCare)cancelFacility(cat);cat.then=null;cat.path=[];cat.walkGoal=null;cat.act=null;cat.eyes='open';cat.cs=null;cat.askKind=null;cat.targetToy=null;pet.on=false;if(cat.state!=='hop'){cat.state='idle';cat.z=0;}dropCarry();}
+function interrupt(){if((typeof CatFlap!=='undefined'&&CatFlap)&&cat.flapTrip){if(CatFlap.locked(cat))return;CatFlap.cancel(cat);}cancelPlayerTVVisits();cat.sleepChoice=null;cat.matVisit=null;cat.randomAction=null;if(lift.actor)endLift();cancelLiftHold();if(gather.active)stopGather();if(cat.facilityCare)cancelFacility(cat);cat.then=null;cat.path=[];cat.walkGoal=null;cat.act=null;cat.eyes='open';cat.cs=null;cat.askKind=null;cat.targetToy=null;pet.on=false;if(cat.state!=='hop'){cat.state='idle';cat.z=0;}dropCarry();}
 function randFloor(){return freePoint(rand(GX0+20,GX1-20),rand(380,GY1-16));}
 function ownerSpot(){const vx=cam.x+VW/2/cam.s,vy=Math.min(GY1-20,cam.y+(safeBot-20)/cam.s);return freePoint(Math.max(70,Math.min(GX1-20,vx)),vy);}
 function enterBox(then){moveTo(BOX_OUT.x,BOX_OUT.y,72,()=>hopTo(BOX_IN.x,BOX_IN.y,()=>{cat.inside='box';cat.face=-1;then();}));}
@@ -1377,6 +1379,7 @@ function fetchToy(t,kind){
     else if(kind==='fetch'){const p=freePoint(throwOrigin.x,throwOrigin.y);
       moveTo(p.x,p.y,125,()=>{dropCarry();bump('play',18);bump('love',6);popMeow('mew');doFor('proud','proud',2.5,t.fav?'把大象寶寶叼回來給你了':`把${t.name}叼回來給你了`);},`叼著${t.name}跑回來`);}
     else if(kind==='bring'){const p=ownerSpot();moveTo(p.x,p.y,85,()=>{dropCarry();startAsk('play');},`叼著${t.name}走向你`);}
+    else if(kind==='flap'){if((typeof CatFlap!=='undefined'&&CatFlap))CatFlap.begin(cat,t,roomPlan);else carryAround(2);}
     else carryAround(t.fav?3:2);
   },msg);
 }
@@ -1555,6 +1558,7 @@ function updateChase(dt){
   }else if(c.cs==='swat'){c.pose='swat';c.ct-=dt;if(c.ct<=0)c.cs='approach';}
 }
 function updateCat(dt){
+ if(cat.flapTrip&&(typeof CatFlap!=='undefined'&&CatFlap)){cat.time+=dt;CatFlap.step(cat,roomPlan,dt);return;}
  if(cat.state==='bedWalk'){updateBedWalk(cat,dt);return;}
  if(cat.state==='bedRest'||cat.state==='bedQueue'){cat.time+=dt;if(cat.state==='bedQueue'&&freeBedSpot(cat))requestBed(cat);return;}
  if(cat.meowPop>0)cat.meowPop=Math.max(0,cat.meowPop-dt);
@@ -2345,6 +2349,7 @@ function drawCompanionBody(c,actor){
 }
 for(const meta of Object.values(WALKING_NPCS))createWalkingNpc(meta);
 if(typeof placeBedScene==='function')placeBedScene();
+try{if((typeof CatFlap!=='undefined'&&CatFlap)){CatFlap.restore(cat,toys,roomPlan);const m=typeof location!=='undefined'&&/[?&]flapFrame=(\d+)/.exec(location.search||'');if(m){const ele=toys.find(t=>t.id==='ele');if(ele)CatFlap.poseFrame(Number(m[1]),cat,ele,roomPlan);}}}catch(e){}
 refreshCameraOptions();
 /* End walking-only companions */
 
@@ -2375,7 +2380,7 @@ let ptr=null,held=null;
 function screenPoint(e){const box=cv.getBoundingClientRect();return {x:(e.clientX-box.left)*VW/box.width,y:(e.clientY-box.top)*VH/box.height};}
 function toWorld(e){const p=screenPoint(e);return{x:p.x/cam.s+cam.x,y:p.y/cam.s+cam.y};}
 function hitToy(p){return [...toys].filter(t=>!t.carried).sort((a,b)=>b.y-a.y).find(t=>Math.hypot(p.x-t.x,p.y-(t.y-t.size*.45-t.z))<Math.max(30,t.size*.6));}
-function hitCat(p){const dx=p.x-cat.x,dy=p.y-(cat.y-cat.z);if(cat.pose==='toastsit')return Math.abs(dx)<85&&dy>-140&&dy<40;if(cat.pose==='belly'||cat.pose==='sun')return Math.abs(dx)<95&&dy>-110&&dy<20;return Math.abs(dx)<60&&dy>-125&&dy<10;}
+function hitCat(p){if(cat.hidden)return false;const dx=p.x-cat.x,dy=p.y-(cat.y-cat.z);if(cat.pose==='toastsit')return Math.abs(dx)<85&&dy>-140&&dy<40;if(cat.pose==='belly'||cat.pose==='sun')return Math.abs(dx)<95&&dy>-110&&dy<20;return Math.abs(dx)<60&&dy>-125&&dy<10;}
 function startPet(){
   if(cat.state==='hop'){cat.then=()=>{if(ptr)startPet();};return;}
   pet.on=true;pet.acc=0;
@@ -2420,6 +2425,7 @@ function actorAt(p){return [cat,ye,rabbit,...extraNPCs].filter(a=>{
 }).sort((a,b)=>b.y-a.y)[0]||null;}
 function cancelLiftHold(){if(lift.timer!==null)clearTimeout(lift.timer);lift.timer=null;lift.hold=null;}
 function beginLift(actor,p,pointer){
+ if((typeof CatFlap!=='undefined'&&CatFlap)&&actor===cat&&CatFlap.locked(cat))return;
  if(protectedLitterExit(actor)){cancelLiftHold();requestLitterExit(actor);say('先從貓砂盆走出來，再抱抱');return;}
  cancelTVVisit(actor);
  cancelLiftHold();stopGather();if(actor===cat)interrupt();else if(actor.facilityCare)cancelFacility(actor);
@@ -2481,6 +2487,7 @@ function pointerDown(e){
   ptr={start:p,last:p,moved:0,hist:[{...p,t:performance.now()}]};
   if(mode==='wand'){wand.x=Math.max(40,Math.min(GX1,p.x));wand.y=Math.max(250,Math.min(GY1,p.y+20));return;}
   if(mode==='treat'){treat.x=Math.max(60,Math.min(GX1-18,p.x));treat.y=Math.max(160,Math.min(GY1-20,p.y));return;}
+  if(mode==='hand'&&(typeof CatFlap!=='undefined'&&CatFlap)&&CatFlap.contains(p,roomPlan)){if(cat.carry&&cat.carry.id==='ele')CatFlap.begin(cat,cat.carry,roomPlan);else{const ele=toys.find(t=>t.id==='ele'&&toyFree(t));if(ele)fetchToy(ele,'flap');}return;}
   if(mode==='hand'&&hitTelevision(p)){ptr.action='tv';return;}
   const t=hitToy(p);
   if(t){held=t;t.held=true;t.inBox=false;t.thrown=false;t.view=0;t.rot=0;t.rolling=false;t.vx=t.vy=t.vz=0;t.z=18;if(cat.targetToy===t)cat.targetToy=null;return;}
@@ -2691,7 +2698,7 @@ function render(){
   c.save();c.beginPath();const desktopRoom=document.documentElement.getAttribute('data-layout')==='desktop',showAbove=desktopRoom||!!(roomPlan&&roomPlan.viewBottom);c.rect(EX0,showAbove?EY0:0,EW,showAbove?EH:EH+EY0);c.clip();
   c.drawImage(bg,EX0,EY0,EW,EH);
   if(window.RoomOutdoors)RoomOutdoors.draw(c,roomPlan?{home:roomPlan.window,backdrop:homeBBackdrop}:desktopPanorama()?{left:-1000,width:2600,floor:FT,backdrop:homePanorama,panorama:true}:{left:HOME_SCENE_LEFT,width:HOME_SCENE_WIDTH,floor:FT,backdrop:homeBBackdrop});
-  if(roomPlan){RoomLayout.drawFurniture(c,roomPlan,window.RoomDetail);if(roomPlan.layoutId==='v130')RoomLayout.drawReserved(c,roomPlan,{family:familyFramePhoto,plant:homePlant,scene:WindowScene});}
+  if(roomPlan){RoomLayout.drawFurniture(c,roomPlan,window.RoomDetail);if(roomPlan.layoutId==='v130')RoomLayout.drawReserved(c,roomPlan,{family:familyFramePhoto,plant:homePlant,scene:WindowScene});if((typeof CatFlap!=='undefined'&&CatFlap))CatFlap.drawFlap(c,roomPlan,cat);}
   else if(window.RoomDetail){if(desktopRoom)RoomDetail.drawDesktop(c,WindowScene,FT,homePlant);else RoomDetail.drawPhone(c,WindowScene,FT,HOME_SCENE_LEFT,HOME_SCENE_WIDTH,homeBBackdrop);}
   drawWallPhoto(c);
   if(roomTelevision&&(roomPlan||desktopRoom))RoomTV.drawFrame(c,roomTelevision.frame(),roomPlan?roomPlan.television.screen:desktopTVScreen);
@@ -2710,7 +2717,7 @@ function render(){
     ...extraNPCs.map(actor=>({y:diningDepth(actor),d:c=>drawWalkingNpc(c,actor)})),
   ];
   if(!roomPlan&&!desktopRoom)list.push({y:Math.max(...phoneTV.footprint.map(p=>p[1]))+1,d:c=>{WindowScene.drawPhoneTelevision(c,FT);if(roomTelevision)RoomTV.drawFrame(c,roomTelevision.frame(),phoneTV.screen);}});
-  for(const t of toys)if(!t.carried)list.push({y:t.y,d:c=>{
+  for(const t of toys)if(!t.carried&&!t.hidden&&!t.flapClip)list.push({y:t.y,d:c=>{
     c.fillStyle='rgba(60,30,8,.2)';c.beginPath();c.ellipse(t.x,t.y,t.size*.42*(1-Math.min(t.z,120)/240),5,0,0,7);c.fill();
     drawToy(c,t,t.x,t.y-t.z,1,t.rot);
   }});
@@ -2779,5 +2786,5 @@ function frame(now){
 }
 if(window.RoomOutdoors)RoomOutdoors.start();
 requestAnimationFrame(frame);
-window.__cat={watchTV:startTVWatching,tvCats,cat,ye,rabbit,treat,setMode:(m)=>setMode(m),facilities:FACILITIES,slots:facilitySlots,reservations:facilityReservations,beginFacility,advanceFacility,facilityClock,updateNpcFacilities,pairDistance,yeBlocked,yeCanStep,yeFindPath,extraNPCs,releaseFacility};
+window.__cat={watchTV:startTVWatching,tvCats,cat,ye,rabbit,treat,setMode:(m)=>setMode(m),facilities:FACILITIES,slots:facilitySlots,reservations:facilityReservations,beginFacility,advanceFacility,facilityClock,updateNpcFacilities,pairDistance,yeBlocked,yeCanStep,yeFindPath,extraNPCs,releaseFacility,flap:typeof CatFlap!=='undefined'?CatFlap:null};
 })();

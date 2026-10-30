@@ -60,7 +60,7 @@ const MOBILE_V130={
  },
  shelf:{x:24,y:48,w:230,h:14},
  clock:{x:-60,y:-20,r:18},
- catFlap:{door:{x:-140,y:40,w:140,h:320},flap:{x:-112,y:262,w:84,h:84},inner:{x:-104,y:270,w:68,h:68},hit:{x:-122,y:257,w:104,h:104},zone:{x:-115,y:362,w:90,h:46},approach:{x:-70,y:430},mouth:{x:-70,y:372},exit:{x:-60,y:470}},
+ catFlap:{door:{x:-140,y:40,w:140,h:320},flap:{x:-112,y:262,w:84,h:84},inner:{x:-96,y:277,w:52,h:55},hit:{x:-138,y:236,w:136,h:136},zone:{x:-115,y:362,w:90,h:46},approach:{x:-70,y:430},mouth:{x:-70,y:372},exit:{x:-60,y:470}},
  aisle:{dx:465,width:240},
  toys:[{id:'ele',x:230,y:720,size:72},{id:'panda',x:470,y:800},{id:'car',x:440,y:690},{id:'husky',x:420,y:945,size:96},{id:'kiss',x:480,y:700}]
 };
