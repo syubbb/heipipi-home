@@ -806,7 +806,7 @@ function drawCatMeal(c){
 }
 function drawCat(c){
  if(cat.hidden)return;
- if((cat.pose==='flapDuck'||cat.pose==='flapPush')&&(typeof CatFlap!=='undefined'&&CatFlap)){CatFlap.drawCat(c,cat,IMG.black_door_gait,roomPlan);return;}
+ if((cat.pose==='flapDuck'||cat.pose==='flapPush')&&(typeof CatFlap!=='undefined'&&CatFlap)){CatFlapElephant=IMG.toy_ele_2;CatFlap.drawCat(c,cat,IMG.black_door_gait,roomPlan);return;}
  if(roomPlan&&window.DoorGait?.draw(c,cat,IMG.black_door_gait))return;
  if(roomPlan&&['sun','window'].includes(cat.act)&&tvCats?.drawFacing(c,cat,{x:roomPlan.window.x+roomPlan.window.width/2,y:roomPlan.window.y+roomPlan.window.height/2}))return;
  if(drawTVVisit(c,cat))return;
@@ -2699,7 +2699,7 @@ function render(){
   c.save();c.beginPath();const desktopRoom=document.documentElement.getAttribute('data-layout')==='desktop',showAbove=desktopRoom||!!(roomPlan&&roomPlan.viewBottom);c.rect(EX0,showAbove?EY0:0,EW,showAbove?EH:EH+EY0);c.clip();
   c.drawImage(bg,EX0,EY0,EW,EH);
   if(window.RoomOutdoors)RoomOutdoors.draw(c,roomPlan?{home:roomPlan.window,backdrop:homeBBackdrop}:desktopPanorama()?{left:-1000,width:2600,floor:FT,backdrop:homePanorama,panorama:true}:{left:HOME_SCENE_LEFT,width:HOME_SCENE_WIDTH,floor:FT,backdrop:homeBBackdrop});
-  if(roomPlan){RoomLayout.drawFurniture(c,roomPlan,window.RoomDetail);if(roomPlan.layoutId==='v130')RoomLayout.drawReserved(c,roomPlan,{family:familyFramePhoto,plant:homePlant,scene:WindowScene});if((typeof CatFlap!=='undefined'&&CatFlap))CatFlap.drawFlap(c,roomPlan,cat);}
+  if(roomPlan){RoomLayout.drawFurniture(c,roomPlan,window.RoomDetail);if(roomPlan.layoutId==='v130')RoomLayout.drawReserved(c,roomPlan,{family:familyFramePhoto,plant:homePlant,scene:WindowScene});if((typeof CatFlap!=='undefined'&&CatFlap)){CatFlapElephant=IMG.toy_ele_2;CatFlap.drawFlap(c,roomPlan,cat);}}
   else if(window.RoomDetail){if(desktopRoom)RoomDetail.drawDesktop(c,WindowScene,FT,homePlant);else RoomDetail.drawPhone(c,WindowScene,FT,HOME_SCENE_LEFT,HOME_SCENE_WIDTH,homeBBackdrop);}
   drawWallPhoto(c);
   if(roomTelevision&&(roomPlan||desktopRoom))RoomTV.drawFrame(c,roomTelevision.frame(),roomPlan?roomPlan.television.screen:desktopTVScreen);

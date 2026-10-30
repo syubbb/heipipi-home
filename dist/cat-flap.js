@@ -148,12 +148,18 @@ function drawFlap(c,plan,actor){
  c.fillStyle='#c44a3d';c.fillRect(flap.x+6,flap.y+flap.h-8,8,5);c.fillStyle='#3d6fb6';c.fillRect(flap.x+flap.w-14,flap.y+flap.h-8,8,5);
  const toy=trip&&trip.toy;if(toy&&toy.flapClip&&!toy.hidden){
   c.save();c.beginPath();c.rect(inner.x,inner.y,inner.w,inner.h);c.clip();
-  c.fillStyle='#7ec8ea';const h=toy.flapH||46,w=h*.72;c.beginPath();c.ellipse(toy.x,toy.y,w*.45,h*.45,0,0,Math.PI*2);c.fill();
+  drawElephant(c,toy.x,toy.y,toy.flapH||46,root.CatFlapElephant);
   c.restore();
  }
  c.restore();
 }
 function round(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);}
+function drawElephant(c,x,y,h,image){
+ if(image&&image.complete&&image.naturalWidth){const w=h*image.naturalWidth/image.naturalHeight;c.drawImage(image,x-w/2,y-h*.8,w,h);return;}
+ c.fillStyle='#7ec8ea';c.beginPath();c.ellipse(x,y,h*.36,h*.42,0,0,Math.PI*2);c.fill();
+}
+function loadArt(src){try{const im=new root.Image();im.src=src;return im;}catch(e){return null;}}
+if(typeof root.Image==='function'){root.CatFlapWood=loadArt('assets/tex-door-wood.png');root.CatFlapJamb=loadArt('assets/tex-door-jamb.png');root.CatFlapSheet=loadArt('assets/flap-real.png');}
 function drawCat(c,actor,image,plan){
  if(!actor||actor.hidden)return false;
  const scale=poseScale();
@@ -164,7 +170,7 @@ function drawCat(c,actor,image,plan){
  c.translate(actor.x,actor.y-(actor.z||0));
  if(image&&image.complete&&image.naturalWidth)c.drawImage(image,REAR.x,REAR.y,REAR.width,REAR.height,-REAR.anchorX*scale,-REAR.ground*scale,REAR.width*scale,REAR.height*scale);
  else{c.fillStyle='#241c18';c.beginPath();c.ellipse(0,-40,22,36,0,0,Math.PI*2);c.fill();}
- if(actor.pose==='flapDuck'&&actor.carry&&!actor.carry.flapClip){c.fillStyle='#7ec8ea';c.beginPath();c.ellipse(18,-46,16,12,0,0,Math.PI*2);c.fill();}
+ if(actor.pose==='flapDuck'&&actor.carry&&!actor.carry.flapClip)drawElephant(c,18,-46,actor.carry.size||46,root.CatFlapElephant);
  c.restore();return true;
 }
 root.CatFlap={ENABLED,POSE_ART,REAR,enabled,poseScale,hitCss,contains,locked,begin,cancel,step,poseFrame,restore,paintDoor,drawFlap,drawCat,forget};
