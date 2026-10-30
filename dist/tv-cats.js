@@ -21,7 +21,7 @@ function create(d){
  const directional=d.directional||new Image();if(!d.directional){directional.decoding='async';directional.src='assets/tv-cat-directions-v1.png';}
  let group=0;const pending=new Map();
  const due=new WeakMap(),random=d.random||Math.random,ready=()=>portrait.complete&&portrait.naturalWidth;
- function candidates(){const g=d.geometry();if(g.seats)return g.seats.map((p,i)=>({...p,slot:i}));const right=Math.min(g.x+110,g.right-53),y=Math.max(350,g.bottom+128);return [[-57,y],[0,y+28],[-155,y+80],[-75,y+120],[0,y+160],[-220,y+245],[-110,y+245],[0,y+245]].map(([dx,y],i)=>({x:right+dx,y,slot:i}));}
+ function candidates(){const g=d.geometry();if(g.seats)return g.seats.map((p,i)=>({...p,slot:i}));const legacy=1220,bottom=g.floorBottom||legacy,scale=(bottom-360)/(legacy-360),right=Math.min(g.x+110,g.right-53),y=Math.max(360+(350-360)*scale,g.bottom+128*scale);return [[-57,0],[0,28],[-155,80],[-75,120],[0,160],[-220,245],[-110,245],[0,245]].map(([dx,dy],i)=>({x:right+dx,y:y+dy*scale,slot:i}));}
  function shuffled(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
  function cancel(a,resume=true){pending.delete(a);if(!a.tvVisit)return;delete a.tvVisit;a.path=[];a.goal=null;a.walkGoal=null;due.set(a,d.clock()+35+random()*50);if(resume)d.resume(a);}
  function pauseForCare(a){const request=pending.get(a)||(a.tvVisit?.group?{group:a.tvVisit.group,until:d.clock()+120}:null);cancel(a,false);if(request)pending.set(a,request);}

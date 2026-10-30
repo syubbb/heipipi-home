@@ -16,7 +16,7 @@ const layers=[],scene={...e.WindowScene,drawDesktopTelevision:()=>layers.push('t
 console.log('Five solid cabinets, recessed shelf geometry, independent volumetric props and exact-photo mat passed');
 vm.runInContext(fs.readFileSync('dist/room-layout.js','utf8'),e);
 for(const desktop of [false,true]){
- const cabinet=e.RoomDetail.cabinetModel(e.RoomLayout.create({desktop,left:-150,width:desktop?2200:900})).find(c=>c.id==='home-open-console'),items=cabinet.bays.flatMap(b=>b.objects);
+ const cabinet=e.RoomDetail.cabinetModel(e.RoomLayout.create({desktop,layout:desktop?undefined:'v129',left:-150,width:desktop?2200:900})).find(c=>c.id==='home-open-console'),items=cabinet.bays.flatMap(b=>b.objects);
  assert(items.length>=5,'TV shelf contains several separate practical objects');assert(items.every(o=>!['plant','vase','frame','lamp'].includes(o.kind)),'TV shelf contains media equipment, not decorative garden items');
  assert(items.some(o=>o.kind==='receiver')&&items.some(o=>o.kind==='console')&&items.some(o=>o.kind==='remote'));
  for(const o of items){assert(o.depth>=.2);assert(o.faces[1].some((p,i)=>p[1]!==o.front[i%4][1]),'Equipment has projected depth');}

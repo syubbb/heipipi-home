@@ -1,0 +1,59 @@
+const assert=require('assert'),fs=require('fs'),vm=require('vm'),make=require('./room-engine.cjs');
+const e={Math};vm.createContext(e);vm.runInContext(fs.readFileSync('dist/room-layout.js','utf8'),e);
+const desk=e.RoomLayout.create({desktop:true,left:-800,width:2200});
+const same=e.RoomLayout.createDesktopV129({desktop:true,left:-800,width:2200});
+assert.equal(desk.floorBottom,1220);assert.equal(desk.bowl.y,1120);assert.equal(desk.gatherY,undefined);assert.equal(desk.bed,undefined);assert.equal(desk.viewBottom,undefined);
+assert.equal(JSON.stringify(desk.bowl),JSON.stringify(same.bowl));assert.equal(JSON.stringify(desk.tvSeats),JSON.stringify(same.tvSeats));
+assert.equal(desk.furniture.some(f=>f.id==='home-right-open'),true,'Desktop bookshelf stays');
+const oldPhone=e.RoomLayout.create({desktop:false,layout:'v129',left:-150,width:900});
+assert.equal(oldPhone.floorBottom,1220);assert.equal(oldPhone.bowl.y,1120);assert.equal(oldPhone.gatherY,undefined);assert.equal(oldPhone.bed,undefined);
+assert.equal(oldPhone.furniture.some(f=>f.id==='home-right-open'),true);
+e.location={search:'?layout=v129'};
+assert.equal(e.RoomLayout.create({desktop:false,left:-150,width:900}).floorBottom,1220,'?layout=v129 restores the phone plan');
+delete e.location;
+const p=e.RoomLayout.createMobileV130();
+assert.equal(p.floor,360);assert.equal(p.floorBottom,1040);assert.equal(p.viewBottom,1080);assert.equal(p.gatherY,763);assert.equal(p.bedTopY,572);
+assert.equal(p.bed.front,p.bedTopY);assert.equal(p.bed.d,p.bedTopY-p.bed.y);assert.equal(p.petStep.front,e.RoomLayout.MOBILE_V130.stepTopY);
+assert.deepEqual([p.litter.x,p.litter.back,p.litter.front],[150,890,962]);
+assert.deepEqual([p.bowl.x,p.bowl.y,p.water.x,p.water.y],[330,990,470,990]);
+assert.deepEqual(p.scratch.map(s=>[s.x,s.y]),[[-70,770],[-70,960]]);
+assert.equal(p.toast.free,true);assert.equal(p.box.wall,false);assert.deepEqual([p.box.x,p.box.back,p.box.front],[600,660,726]);
+assert.equal(p.furniture.some(f=>f.id==='home-right-open'),false,'Mobile bookshelf is removed');
+assert.equal(p.window.fitBodies,true);assert.equal(p.window.width,280);assert.equal(p.window.height,290);
+assert.deepEqual([p.catFlap.flap.w,p.catFlap.flap.h],[84,84]);assert.deepEqual([p.catFlap.hit.w,p.catFlap.hit.h],[104,104]);
+assert.equal(p.lookout.x,540);assert.equal(p.lookout.y,602);
+function ellipse(a,b){return ((a.x-b.x)/(a.rx+b.rx))**2+((a.y-b.y)/(a.ry+b.ry))**2<1;}
+const litterBox={x:p.litter.x,y:(p.litter.back+p.litter.front)/2,rx:p.litter.width/2,ry:(p.litter.front-p.litter.back)/2};
+assert(!p.scratch.some(s=>ellipse(s,litterBox)),'Scratch pads stay off the litter box');
+const use=(s,side)=> ({x:s.x+side*68,y:s.y+10,rx:20,ry:12});
+assert(!ellipse(use(p.scratch[1],1),{x:p.litter.x,y:p.litter.front-20,rx:p.litter.width/2+28,ry:40}),'Scratch #2 approach misses the litter keep-out');
+const seat5=p.tvSeats[5];
+assert(Math.hypot(use(p.scratch[0],1).x-seat5.x,use(p.scratch[0],1).y-seat5.y)>60,'Scratch #1 approach misses TV seat 5');
+for(const toy of p.toys){
+ const box=p.box,ix=28,iy=12;
+ assert(!(toy.x>box.x-86-ix&&toy.x<box.x+86+ix&&toy.y>box.back-6-iy&&toy.y<box.front+4+iy),'Toy '+toy.id+' is outside the box keep-out');
+}
+const room=make(7);
+room.H=1220;room.FT=360;room.EX0=-150;room.EW=900;room.document={documentElement:{getAttribute:()=>'phone'}};
+vm.runInContext(fs.readFileSync('dist/room-layout.js','utf8'),room);room.applyHomeLayout();
+vm.runInContext('this.plan=roomPlan;this.out=LIT_OUT;this.boxOut=BOX_OUT;',room);
+assert.equal(room.plan.layoutId,'v130');assert.equal(room.plan.bed.front,room.plan.bedTopY);
+assert.deepEqual(room.out,{x:150,y:856},'Litter approach stays on the open side of the box');
+const goals=[room.out,room.boxOut,room.plan.mat,{x:room.plan.toast.x,y:room.plan.toast.y-40},room.plan.lookout,{x:room.plan.left+room.plan.width/2,y:room.plan.gatherY}];
+for(const seat of room.plan.tvSeats)goals.push(seat);
+for(const a of room.actors){
+ for(const g of goals){
+  for(const other of room.actors)Object.assign(other,{x:-400,y:500,path:[],state:'wait',facilityCare:null,gatherSlot:null,trafficYield:null,scratchBoard:null});
+  Object.assign(a,{x:room.plan.mainAisle.x,y:700});
+  const path=room.yeFindPath(a.x,a.y,g.x,g.y,a);assert(path.length,(a.id||'black')+' path to '+JSON.stringify(g));assert(Math.hypot(path.at(-1).x-g.x,path.at(-1).y-g.y)<8,(a.id||'black')+' arrived '+JSON.stringify(g));
+ }
+}
+const rabbit=room.actors.find(a=>a.id==='rabbit'),socks=room.actors.find(a=>a.id==='socks');
+Object.assign(rabbit,{x:room.plan.mainAisle.x,y:700,scratchBoard:null,path:[],facilityCare:null,gatherSlot:null,trafficYield:null,state:'wait'});
+assert(room.beginScratchVisit(rabbit),'first scratch pad');const first=rabbit.scratchBoard;
+socks.scratchBoard=first;Object.assign(rabbit,{x:room.plan.mainAisle.x,y:700,scratchBoard:null,path:[],state:'wait'});
+assert(room.beginScratchVisit(rabbit),'second scratch pad');assert.notEqual(rabbit.scratchBoard,first);
+assert(room.yeBlocked(p.bed.x+p.bed.w/2,p.bed.y+p.bed.d/2,false,room.npc),'Bed keep-out follows bedTopY');
+const zone=p.catFlap.zone,zx=(zone[0][0]+zone[1][0])/2,zy=(zone[0][1]+zone[2][1])/2;
+assert(room.yeBlocked(zx,zy,false,room.npc),'NPCs stay out of the cat-flap zone');
+console.log('Mobile v130 table, derived bed/step keep-out, and station paths passed; desktop plan unchanged');

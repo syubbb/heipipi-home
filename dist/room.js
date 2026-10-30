@@ -136,6 +136,16 @@ function say(m){statusEl.textContent=m;}
 /* ---------- places & obstacles ---------- */
 const BOX={x:130,back:268,front:332};
 let roomPlan=null;
+function playBottom(){
+ if(typeof document==='undefined'||!document.documentElement||document.documentElement.getAttribute('data-layout')==='desktop')return H;
+ return roomPlan&&roomPlan.floorBottom||H;
+}
+function npcFlapBlocked(x,y){
+ const z=roomPlan&&roomPlan.catFlap&&roomPlan.catFlap.zone;if(!z)return false;
+ let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+ for(const p of z){minX=Math.min(minX,p[0]);maxX=Math.max(maxX,p[0]);minY=Math.min(minY,p[1]);maxY=Math.max(maxY,p[1]);}
+ return x>minX-IX&&x<maxX+IX&&y>minY-IY&&y<maxY+IY;
+}
 function ownsTVVisit(a){return typeof tvCats!=='undefined'&&tvCats?.has(a);}
 function cancelTVVisit(a){if(typeof tvCats!=='undefined'&&tvCats)tvCats.cancel(a,false);}
 function cancelPlayerTVVisits(){if(typeof tvCats!=='undefined'&&tvCats?.isGroupActive())tvCats.cancelAll();else cancelTVVisit(cat);}
@@ -254,17 +264,18 @@ const EAT_AT={x:BOWL.x+230,y:BOWL.y},DRINK_AT={x:WATER.x+230,y:WATER.y};
 function applyHomeLayout(){
  if(typeof RoomLayout==='undefined')return false;
  const desktop=typeof document!=='undefined'&&document.documentElement.getAttribute('data-layout')==='desktop';
- const previous=roomPlan,next=RoomLayout.create({desktop,left:EX0,width:EW});
+ let layout;try{if(typeof location!=='undefined'&&location&&typeof location.search==='string'){const m=/[?&]layout=([^&]*)/.exec(location.search);layout=m?decodeURIComponent(m[1]):undefined;}}catch(e){}
+ const previous=roomPlan,next=RoomLayout.create({desktop,left:EX0,width:EW,layout});
  if(previous&&previous.desktop===desktop&&previous.left===EX0&&previous.width===EW)return false;
  if(previous){
   tvCats?.cancelAll();if(typeof gather!=='undefined'&&gather.active)stopGather();
   for(const a of [cat,...npcBodies()]){releaseFacility(a);releaseScratchBoard(a);a.facilityCare=null;a.inside=null;a.matVisit=null;a.sleepChoice=null;a.randomAction=null;a.path=[];a.goal=null;a.walkGoal=null;a.after=null;a.then=null;a.trafficYield=null;a.act=null;a.eyes='open';a.state=a===cat?'idle':'wait';a.pose='sit';a.z=0;a.timer=.5;a.x=next.left+(a.x-previous.left)*next.width/previous.width;}
  }
  roomPlan=next;FT=next.floor;Object.assign(BOX,next.box);Object.assign(FAVOURITE_MAT,next.mat);Object.assign(BOWL,next.bowl);Object.assign(WATER,next.water);Object.assign(LIT,next.litter);Object.assign(SUN,next.lookout);Object.assign(TOAST_CENTER,next.toast);TOAST.w=next.toast.width;TOAST.x=TOAST_CENTER.x+(300-TOAST_PAD.cx)*TOAST.w/600;TOAST.y=TOAST_CENTER.y+(590-TOAST_PAD.cy)*TOAST.w/600;
- Object.assign(BOX_IN,{x:BOX.x+4,y:BOX.front-27});Object.assign(BOX_OUT,{x:BOX.x+4,y:BOX.front+66});Object.assign(LIT_IN,{x:LIT.x,y:LIT.front-20});Object.assign(LIT_OUT,{x:LIT.x,y:LIT.front+68});
+ Object.assign(BOX_IN,{x:BOX.x+4,y:BOX.front-27});Object.assign(BOX_OUT,{x:BOX.x+4,y:BOX.front+66});Object.assign(LIT_IN,{x:LIT.x,y:LIT.front-20});Object.assign(LIT_OUT,next.litter.approach||{x:LIT.x,y:Math.min(next.floorBottom-28,LIT.front+68)});
  Object.assign(EAT_AT,{x:BOWL.x+230,y:BOWL.y});Object.assign(DRINK_AT,{x:WATER.x+230,y:WATER.y});
  for(const kind of ['eat','drink'])Object.assign(FACILITIES[kind],kind==='eat'?BOWL:WATER);Object.assign(FACILITIES.litter,LIT_OUT);
- OBST.splice(0,OBST.length,{x0:BOX.x-86,x1:BOX.x+86,y0:BOX.back-6,y1:BOX.front+4,h:60,wall:true},{x0:LIT.x-LIT.width/2,x1:LIT.x+LIT.width/2,y0:LIT.back-4,y1:LIT.front+4,h:42});
+ OBST.splice(0,OBST.length,{x0:BOX.x-86,x1:BOX.x+86,y0:BOX.back-6,y1:BOX.front+4,h:60,wall:next.box.wall??true},{x0:LIT.x-LIT.width/2,x1:LIT.x+LIT.width/2,y0:LIT.back-4,y1:LIT.front+4,h:42});
  GX0=EX0+42;GX1=EX0+EW-42;GY0=FT+24;GY1=next.floorBottom-28;ROWS=Math.floor((GY1-GY0)/CELL)+1;COLS=Math.floor((GX1-GX0)/CELL)+1;N=COLS*ROWS;panoramaFurnitureCache=null;grid=new Uint8Array(N);for(let i=0;i<N;i++)grid[i]=blockedPt(gx(i),gy(i))?1:0;
  for(const t of toys){const p=next.toys.find(p=>p.id===t.id);if(p&&!t.carried&&!t.held)Object.assign(t,{x:p.x,y:p.y});}
  return true;
@@ -1501,7 +1512,7 @@ function updateToys(dt){
     t.x+=t.vx*dt;t.y+=t.vy*dt;
     if(t.z===0){const f=Math.pow(.04,dt);t.vx*=f;t.vy*=f;}
     if(t.x<GX0){t.x=GX0;t.vx=Math.abs(t.vx)*.5;}if(t.x>GX1){t.x=GX1;t.vx=-Math.abs(t.vx)*.5;}
-    if(t.y<244){t.y=244;t.vy=Math.abs(t.vy)*.5;}if(t.y>H-14){t.y=H-14;t.vy=-Math.abs(t.vy)*.5;}
+    if(t.y<244){t.y=244;t.vy=Math.abs(t.vy)*.5;}if(t.y>playBottom()-14){t.y=playBottom()-14;t.vy=-Math.abs(t.vy)*.5;}
     for(const o of OBST){
       if(t.z>o.h)continue;
       const L=o.x0-16,R=o.x1+16,T=o.wall?0:o.y0-6,B=o.y1+10;
@@ -1528,6 +1539,7 @@ const YE_ANIMATION={"walk": {"frames": 69, "fps": 12.0, "duration": 5.75}, "walk
 const ye={x:510,y:390,face:-1,state:'wait',path:[],time:0,timer:.6,speed:55,after:null,walkTime:0,wait:0,repath:0,lastSpot:null};
 npcCollider=ye;
 function yeBlocked(x,y,avoidCat=true,actor=ye,ownKind=null){
+  if(npcFlapBlocked(x,y))return true;
   if(panoramaFurnitureBlocked(x,y))return true;
   if(actor?.walkOnly&&(x<EX0+95||x>EX0+EW-95))return true;
   if(puddleBlocked(x,y)||scratchBoardBlocked(x,y,actor))return true;
@@ -1549,6 +1561,7 @@ function yeFreePoint(x,y,actor=ye){
   return best;
 }
 function yeCanStep(a,b,actor=ye){
+  if(npcFlapBlocked(b.x,b.y))return false;
   if(!panoramaFurnitureStepClear(a,b))return false;
   if(actor?.walkOnly&&(b.x<EX0+95&&!(a.x<EX0+95&&b.x>a.x)||b.x>EX0+EW-95&&!(a.x>EX0+EW-95&&b.x<a.x)))return false;
   if(!puddleStepClear(a,b)||!scratchBoardStepClear(a,b,actor))return false;
@@ -1951,12 +1964,12 @@ function drawYeMoodIcon(c,npc=ye,overlay=false){
 }
 function initializeCharacters(){
   let black=null;
-  for(let i=0;i<400;i++){const p={x:rand(GX0+33,GX1-33),y:rand(355,H-55)};if(!yeBlocked(p.x,p.y,false)){black=p;break;}}
+  for(let i=0;i<400;i++){const p={x:rand(GX0+33,GX1-33),y:rand(355,playBottom()-55)};if(!yeBlocked(p.x,p.y,false)){black=p;break;}}
   if(!black)black=yeFreePoint(480,420);
   Object.assign(cat,{x:black.x,y:black.y,face:pick([-1,1]),state:'timed',pose:pick(['sit','loaf','look']),timer:rand(1.2,5),time:rand(0,15)});
   cat.act=cat.pose==='loaf'?'loaf':'look';videoWalkTime=rand(0,VIDEO_WALK.duration);
   let npc=null;
-  for(let i=0;i<400;i++){const p={x:rand(GX0+33,GX1-33),y:rand(355,H-55)};if(!yeBlocked(p.x,p.y)&&Math.hypot(p.x-cat.x,p.y-cat.y)>180){npc=p;break;}}
+  for(let i=0;i<400;i++){const p={x:rand(GX0+33,GX1-33),y:rand(355,playBottom()-55)};if(!yeBlocked(p.x,p.y)&&Math.hypot(p.x-cat.x,p.y-cat.y)>180){npc=p;break;}}
   if(!npc){let distance=-1;for(let i=0;i<N;i++){const x=gx(i),y=gy(i),d=Math.hypot(x-cat.x,y-cat.y);if(!yeBlocked(x,y)&&d>distance){distance=d;npc={x,y};}}}
   Object.assign(ye,{x:npc.x,y:npc.y,face:pick([-1,1]),state:'wait',path:[],timer:rand(.2,4),time:rand(0,15),walkTime:rand(0,YE_ANIMATION.walk.duration),icon:pick(['happy','curious','sleepy','content'])});
   ye.iconUntil=ye.time+rand(8,22);
@@ -1966,7 +1979,7 @@ initializeCharacters();
 /* ---------- camera: room fills the screen, 黑屁屁 stays in the clear area ---------- */
 let VW=innerWidth,VH=innerHeight,DPR=1,safeTop=0,safeBot=VH;
 const cam={x:0,y:0,s:1,zoom:1,zt:1,init:false};
-function roomBaseScale(width,height){const desktop=document.documentElement.getAttribute('data-layout')==='desktop';return Math.min(width/(desktop?W:900),height/H,desktop?.65:Infinity);}
+function roomBaseScale(width,height){const desktop=document.documentElement.getAttribute('data-layout')==='desktop';return desktop?Math.min(width/(desktop?W:900),height/H,desktop?.65:Infinity):Math.min(width/900,height/1080);}
 function resizeRoomBounds(width,height){
  const scale=roomBaseScale(width,height),visibleWidth=width/scale,left=(W-visibleWidth)/2;
  const desktop=document.documentElement.getAttribute('data-layout')==='desktop',backgroundHeight=desktop?Math.max(2100,Math.ceil(height/scale-EY0+64)):2100;
@@ -2005,7 +2018,7 @@ function updateCam(dt){
  const cx=manual?cam.manualX:close?subject.x:W/2;
  const cy=manual?cam.manualY:close?subject.y-(subject.z||0)-(subject===cat&&cat.pose==='belly'?45:60):H/2;
  let x=cx-VW/2/s,y=cy-(safeTop+safeBot)/2/s;
- {const visibleW=VW/s,visibleH=sh/s;x=visibleW<EW?Math.max(EX0,Math.min(EX0+EW-visibleW,x)):EX0+(EW-visibleW)/2;const top=visibleH<H?Math.max(0,Math.min(H-visibleH,cy-visibleH/2)):0;y=top-safeTop/s;}
+ {const visibleW=VW/s,visibleH=sh/s,viewBottom=roomPlan&&roomPlan.viewBottom;x=visibleW<EW?Math.max(EX0,Math.min(EX0+EW-visibleW,x)):EX0+(EW-visibleW)/2;const top=viewBottom?(visibleH>=viewBottom?viewBottom-visibleH:Math.max(0,Math.min(viewBottom-visibleH,cy-visibleH/2))):(visibleH<H?Math.max(0,Math.min(H-visibleH,cy-visibleH/2)):0);y=top-safeTop/s;}
  if(!manual)cam.zoom=s/base;cam.s=s;cam.x=manual?x:lerp(cam.x,x,f);cam.y=manual?y:lerp(cam.y,y,f);cam.init=true;
 }
 const bOverview=document.getElementById('bOverview'),cameraTarget=document.getElementById('cameraTarget'),cameraPicker=cameraTarget.closest('label');
@@ -2099,7 +2112,7 @@ function drawRabbit(c){
 }
 function initializeRabbit(){
   let chosen=null;
-  for(let i=0;i<500;i++){const p={x:rand(GX0+23,GX1-23),y:rand(365,H-30)};if(!yeBlocked(p.x,p.y,true,rabbit)&&npcObstacles(rabbit).every(o=>pairDistance(p,o)>1.3)){chosen=p;break;}}
+  for(let i=0;i<500;i++){const p={x:rand(GX0+23,GX1-23),y:rand(365,playBottom()-30)};if(!yeBlocked(p.x,p.y,true,rabbit)&&npcObstacles(rabbit).every(o=>pairDistance(p,o)>1.3)){chosen=p;break;}}
   if(!chosen){let best=-1;for(let i=0;i<N;i++){const p={x:gx(i),y:gy(i)};if(yeBlocked(p.x,p.y,true,rabbit))continue;const score=Math.min(...npcObstacles(rabbit).map(o=>pairDistance(p,o)));if(score>best){best=score;chosen=p;}}}
   if(chosen)Object.assign(rabbit,{x:chosen.x,y:chosen.y});rabbit.face=pick([-1,1]);rabbit.timer=rand(.3,1.6);rabbit.time=rand(0,8);rabbit.walkTime=rand(0,RABBIT_ANIMATION.walk.duration);rabbit.icon=pick(['happy','curious']);rabbit.iconUntil=rabbit.time+rand(5,10);
 }
@@ -2222,14 +2235,14 @@ refreshCameraOptions();
 
 const groundRipples=[];
 function addGroundRipple(p){
-  if(p.x<0||p.x>W||p.y<FT||p.y>H||blockedPt(p.x,p.y)||hitCat(p)||hitToy(p))return;
+  if(p.x<0||p.x>W||p.y<FT||p.y>playBottom()||blockedPt(p.x,p.y)||hitCat(p)||hitToy(p))return;
   groundRipples.push({x:p.x,y:p.y,age:0});if(groundRipples.length>16)groundRipples.shift();
 }
 function updateGroundRipples(dt){for(let i=groundRipples.length-1;i>=0;i--){groundRipples[i].age+=dt;if(groundRipples[i].age>.85)groundRipples.splice(i,1);}}
 function drawGroundRipples(c){
-  c.save();c.beginPath();c.rect(0,FT,W,H-FT);c.clip();
+  c.save();c.beginPath();c.rect(0,FT,W,playBottom()-FT);c.clip();
   for(const p of groundRipples){
-    const depth=Math.max(0,Math.min(1,(p.y-FT)/(H-FT))),perspective=.65+depth*.55;
+    const depth=Math.max(0,Math.min(1,(p.y-FT)/(playBottom()-FT))),perspective=.65+depth*.55;
     for(let j=0;j<3;j++){
       const t=(p.age-j*.12)/.61;if(t<0||t>1)continue;
       const radius=(5+35*t)*perspective;
@@ -2364,7 +2377,7 @@ function pointerMove(e){
   ptr.moved+=d*cam.s;ptr.last=p;const now=performance.now();ptr.hist.push({...p,t:now});while(ptr.hist.length>2&&now-ptr.hist[0].t>110)ptr.hist.shift();
   if(mode==='wand'){wand.x=Math.max(40,Math.min(GX1,p.x));wand.y=Math.max(250,Math.min(GY1,p.y+20));return;}
   if(mode==='treat'){treat.x=Math.max(60,Math.min(GX1-18,p.x));treat.y=Math.max(160,Math.min(GY1-20,p.y));return;}
-  if(held){held.x=Math.max(GX0,Math.min(GX1,p.x));held.y=Math.max(244,Math.min(H-14,p.y+held.size*.45));return;}
+  if(held){held.x=Math.max(GX0,Math.min(GX1,p.x));held.y=Math.max(244,Math.min(playBottom()-14,p.y+held.size*.45));return;}
   if(pet.on&&hitCat(p))strokePet(d);
 }
 cv.addEventListener('pointermove',pointerMove);
@@ -2403,7 +2416,7 @@ function startGather(){
  const actors=[cat,ye,rabbit,...extraNPCs],order=[...actors];
  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
  let key=order.map(a=>actors.indexOf(a)).join(',');if(key===gather.lastOrder&&order.length>1){order.push(order.shift());key=order.map(a=>actors.indexOf(a)).join(',');}gather.lastOrder=key;gather.order=order;gather.active=true;
- const center=roomPlan?EX0+EW/2:TOAST_CENTER.x,y=roomPlan?roomPlan.floor+510:TOAST_CENTER.y-75;
+ const center=roomPlan?EX0+EW/2:TOAST_CENTER.x,y=roomPlan?(roomPlan.gatherY??roomPlan.floor+510):TOAST_CENTER.y-75;
  const positions=[0];for(let i=1;i<order.length;i++)positions.push(positions[i-1]+gatherFootprint(order[i-1]).right-gatherFootprint(order[i]).left-3);
  const left=positions[0]+gatherFootprint(order[0]).left,right=positions.at(-1)+gatherFootprint(order.at(-1)).right,offset=center-(left+right)/2;
  for(const toy of toys)if(Math.abs(toy.y-y)<65&&Math.abs(toy.x-center)<260){toy.y=GY1-25;toy.x=Math.max(GX0+30,Math.min(GX1-30,toy.x));}
@@ -2558,10 +2571,10 @@ function render(){
   const c=ctx;c.setTransform(1,0,0,1,0,0);c.fillStyle='#e4dccf';c.fillRect(0,0,cv.width,cv.height);
   const s=cam.s*DPR;c.setTransform(s,0,0,s,-cam.x*s,-cam.y*s);
   c.imageSmoothingQuality='high';
-  c.save();c.beginPath();const desktopRoom=document.documentElement.getAttribute('data-layout')==='desktop';c.rect(EX0,desktopRoom?EY0:0,EW,desktopRoom?EH:EH+EY0);c.clip();
+  c.save();c.beginPath();const desktopRoom=document.documentElement.getAttribute('data-layout')==='desktop',showAbove=desktopRoom||!!(roomPlan&&roomPlan.viewBottom);c.rect(EX0,showAbove?EY0:0,EW,showAbove?EH:EH+EY0);c.clip();
   c.drawImage(bg,EX0,EY0,EW,EH);
   if(window.RoomOutdoors)RoomOutdoors.draw(c,roomPlan?{home:roomPlan.window,backdrop:homeBBackdrop}:desktopPanorama()?{left:-1000,width:2600,floor:FT,backdrop:homePanorama,panorama:true}:{left:HOME_SCENE_LEFT,width:HOME_SCENE_WIDTH,floor:FT,backdrop:homeBBackdrop});
-  if(roomPlan)RoomLayout.drawFurniture(c,roomPlan,window.RoomDetail);
+  if(roomPlan){RoomLayout.drawFurniture(c,roomPlan,window.RoomDetail);if(roomPlan.bed)RoomLayout.drawReserved(c,roomPlan);}
   else if(window.RoomDetail){if(desktopRoom)RoomDetail.drawDesktop(c,WindowScene,FT,homePlant);else RoomDetail.drawPhone(c,WindowScene,FT,HOME_SCENE_LEFT,HOME_SCENE_WIDTH,homeBBackdrop);}
   drawWallPhoto(c);
   if(roomTelevision&&(roomPlan||desktopRoom))RoomTV.drawFrame(c,roomTelevision.frame(),roomPlan?roomPlan.television.screen:desktopTVScreen);
@@ -2625,7 +2638,7 @@ function finishLocomotionTick(actor,before,dt){
   releaseScratchBoard(actor);actor.path=[];actor.state='wait';actor.timer=.1;actor.goal=null;
  }
 }
-function televisionGeometry(){const screen=roomPlan?roomPlan.television.screen:desktopPanorama()?desktopTVScreen:phoneTV.screen;return {screen,seats:roomPlan?.tvSeats,x:(screen[0][0]+screen[1][0])/2,bottom:Math.max(...screen.map(p=>p[1])),right:Math.min(GX1,EX0+EW-30)};}
+function televisionGeometry(){const screen=roomPlan?roomPlan.television.screen:desktopPanorama()?desktopTVScreen:phoneTV.screen;return {screen,seats:roomPlan?.tvSeats,floorBottom:roomPlan?.floorBottom,x:(screen[0][0]+screen[1][0])/2,bottom:Math.max(...screen.map(p=>p[1])),right:Math.min(GX1,EX0+EW-30)};}
 function hitTelevision(p){const q=televisionGeometry().screen;let inside=false;for(let i=0,j=q.length-1;i<q.length;j=i++){const a=q[i],b=q[j];if((a[1]>p.y)!==(b[1]>p.y)&&p.x<(b[0]-a[0])*(p.y-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;}
 function startTVWatching(){if(deferLitterExit(startTVWatching))return;stopGather();interrupt();if(mode!=='hand')setMode('hand',true);beginControlledMode(()=>{cat.state='idle';cat.timer=.5;},'hand');const count=tvCats?.startAll()||0;say(count?'一起靠近電視，看著熟悉的身影，心裡暖暖的':'等大家忙完，再一起看電視');}
 if(typeof window!=='undefined'&&window.CatTV)tvCats=CatTV.create({

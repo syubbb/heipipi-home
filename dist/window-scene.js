@@ -16,12 +16,12 @@ function lighting(s,date,t,reduced=false){
  return {day,dusk,cloud,season,leaf:mix([19,39,37],leaf,day),sky,horizon,fabric,flash,wet,storm,flags:f,rainCount:wet?f.drizzle?45:f.snow?45:Math.min(190,85+(s.current?.precipitation||0)*9):0,wind:clamp((s.current?.wind_speed_10m||0)/25,0,2),t:reduced?0:t};
 }
 function polygon(c,points,color){c.fillStyle=color;c.beginPath();c.moveTo(...points[0]);for(const p of points.slice(1))c.lineTo(...p);c.closePath();c.fill();}
-function sky(c,s,l,showBodies=true){
+function sky(c,s,l,showBodies=true,span=null){
  const grad=c.createLinearGradient(0,25,0,250);grad.addColorStop(0,rgb(l.sky));grad.addColorStop(.7,rgb(l.horizon));grad.addColorStop(1,rgb(mix(l.horizon,[133,151,152],l.day*.35)));c.fillStyle=grad;c.fillRect(735,25,420,230);
  if(l.day<.3&&l.cloud<.6){for(let i=0;i<38;i++){c.globalAlpha=(1-l.day)*(1-l.cloud)*(.25+hash(i)*.45);c.fillStyle='#f0e6d0';c.fillRect(744+hash(i+8)*390,35+hash(i+70)*95,hash(i+90)>.7?1.2:.6,.8);}c.globalAlpha=1;}
  for(const [body,moon]of showBodies?[[s.sun,false],[s.moon,true]]:[]){
   if(body.altitude<-.015||l.cloud>.92||l.wet||moon&&l.day>.65)continue;
-  const az=(body.azimuth*180/Math.PI+540)%360,x=752+clamp((az-50)/260)*372,y=145-clamp(body.altitude/1.4)*100,r=moon?7:11;
+  const az=(body.azimuth*180/Math.PI+540)%360,x=(span?span.x0:752)+clamp((az-50)/260)*(span?span.x1-span.x0:372),y=(span?span.y1:145)-clamp(body.altitude/1.4)*(span?span.y1-span.y0:100),r=moon?7:11;
   const glow=c.createRadialGradient(x,y,1,x,y,r*4);glow.addColorStop(0,moon?'rgba(232,236,255,.28)':'rgba(255,226,150,.45)');glow.addColorStop(1,'rgba(255,230,190,0)');c.fillStyle=glow;c.fillRect(x-r*4,y-r*4,r*8,r*8);
   c.fillStyle=moon?'#f5ead3':'#fff0c4';c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
   if(moon){c.fillStyle=rgb(l.sky);c.beginPath();c.ellipse(x+(s.illum.phase<.5?-1:1)*r*s.illum.fraction*1.6,y,r*(1-s.illum.fraction*.6),r,0,0,Math.PI*2);c.fill();}
@@ -406,7 +406,9 @@ function draw(c,s,date,g,reduced=false){
   // Cancel the frame's unequal scaling; crop one uniformly scaled exterior.
   const exteriorScale=Math.max(w.width/400,w.height/220);
   c.translate(942,138);c.scale(exteriorScale/(w.width/400),exteriorScale/(w.height/220));c.translate(-942,-138);
-  sky(c,s,l);landscape(c,l);precipitation(c,l);lightning(c,l);c.restore();
+  const hx=192*(w.width/400)/exteriorScale,hy=102*(w.height/220)/exteriorScale;
+  const span=w.fitBodies?{x0:Math.max(752,942-hx+16),x1:Math.min(1124,942+hx-16),y0:Math.max(45,138-hy+16),y1:Math.min(145,138+hy-16)}:null;
+  sky(c,s,l,true,span);landscape(c,l);precipitation(c,l);lightning(c,l);c.restore();
   windowFrame(c,l);c.restore();
   c.save();c.translate(w.x,w.y);c.scale(w.width/400,((w.hem||w.y+w.height+40)-w.y)/306);c.translate(-742,-28);curtains(c,l,g.backdrop);c.restore();return l;
  }
