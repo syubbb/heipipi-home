@@ -1,0 +1,19 @@
+/* Desktop fills the browser window; the room keeps its original proportions. */
+html[data-layout="desktop"] body{left:0;top:0;inset:0;width:100vw;height:100vh;transform:none;box-shadow:none}
+html[data-layout="desktop"] canvas#room{width:100%;height:100%;inset:0}
+html[data-layout="desktop"] .hud .inner{max-width:none;display:grid;grid-template-columns:minmax(470px,auto) minmax(130px,1fr) minmax(220px,1fr);align-items:center;gap:14px;padding:0 16px}
+html[data-layout="desktop"] .row1{flex-wrap:nowrap;gap:12px;min-width:0}
+html[data-layout="desktop"] .room-heading{width:auto!important;flex:0 1 auto!important;flex-wrap:nowrap!important;gap:8px!important}
+html[data-layout="desktop"] .name{font-size:18px;white-space:nowrap}
+html[data-layout="desktop"] #outdoors-status{font-size:10px!important;margin:0!important}
+html[data-layout="desktop"] .hbtns{width:auto;flex-wrap:nowrap;flex-shrink:0}
+html[data-layout="desktop"] .chip{font-size:12px;padding:6px 9px}
+html[data-layout="desktop"] .lines{min-width:0}
+html[data-layout="desktop"] .status,html[data-layout="desktop"] .want{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html[data-layout="desktop"] .needs{min-width:0;gap:5px}
+html[data-layout="desktop"] .tools .inner{max-width:none;padding:0 14px}
+html[data-layout="desktop"] .grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);grid-auto-rows:62px;gap:5px}
+html[data-layout="desktop"] .grid button{font-size:12px;grid-template-rows:22px 1fr}
+html[data-layout="desktop"] .tool-label{white-space:nowrap}
+@media(max-width:1050px){html[data-layout="desktop"] .hud .inner{grid-template-columns:minmax(460px,auto) minmax(0,1fr);gap:7px 12px}html[data-layout="desktop"] .needs{grid-column:1/-1}html[data-layout="desktop"] .lines{min-width:0}}
+@media(max-height:500px){html[data-layout="desktop"] .grid{grid-auto-rows:48px}html[data-layout="desktop"] .grid button{grid-template-columns:20px 1fr;grid-template-rows:1fr;gap:2px}html[data-layout="desktop"] .hud{padding:4px 0}html[data-layout="desktop"] .tools{padding:4px 0}}

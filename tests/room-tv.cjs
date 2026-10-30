@@ -1,0 +1,18 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+assert(fs.existsSync('dist/room-tv.js'),'Television needs a lightweight playlist player');
+const e={Math,Promise,Image:class{constructor(){this.complete=false;}}};vm.createContext(e);vm.runInContext(fs.readFileSync('dist/room-tv.js','utf8'),e);const tv=e.RoomTV;
+const listeners={},vlisteners={};let played=0,paused=0,loaded=0;
+const doc={hidden:false,body:{appendChild(){}},addEventListener(n,fn){listeners[n]=fn;}};
+const video={style:{},dataset:{},setAttribute(){},addEventListener(n,fn){vlisteners[n]=fn;},load(){loaded++;},play(){played++;return Promise.resolve();},pause(){paused++;},readyState:2,videoWidth:270,videoHeight:480};
+const p=tv.createPlayer({document:doc,video,playlist:[{src:'one.mp4'},{src:'two.mp4'},{src:'three.mp4'}]});
+assert.equal(video.src,'one.mp4');assert(video.muted&&video.playsInline);assert.equal(loaded,1);assert.equal(played,1);assert.equal(p.frame(),video);
+vlisteners.ended();assert.equal(video.src,'two.mp4');assert.equal(loaded,2);vlisteners.ended();vlisteners.ended();assert.equal(video.src,'one.mp4','Playlist loops');
+const before=loaded;for(let i=0;i<10;i++)vlisteners.error();assert.equal(loaded,before+2,'A broken playlist stops instead of requesting forever');assert.equal(video.dataset.playback,'unavailable');listeners.pointerdown();assert.equal(loaded,before+3,'A user gesture can retry playback');
+doc.hidden=true;listeners.visibilitychange();assert(paused>0,'Background tabs pause decoding');doc.hidden=false;listeners.visibilitychange();assert(played>1);
+assert.equal(typeof tv.coverCrop,'function','TV crops portrait video to fill the whole screen');
+const crop=tv.coverCrop([[0,0],[160,0],[160,90],[0,90]],270,480);
+assert.equal(crop.width,270);assert(Math.abs(crop.height-151.875)<.001);assert(Math.abs(crop.y-164.0625)<.001);
+const q=[[10,20],[210,40],[210,140],[10,120]],inner=tv.containQuad(q,270,480);assert(inner[0][0]>10&&inner[1][0]<210,'Portrait video is centered within landscape screen');assert(inner[0][1]>20&&inner[1][1]<40,'Contained image follows sloped screen top');
+let draws=0;const canvas=new Proxy({createLinearGradient:()=>({addColorStop(){}}),drawImage(){draws++;}},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});tv.drawFrame(canvas,video,q);assert.equal(draws,1,'A full video frame is drawn once without triangle seams');
+for(const html of ['dist/index.html','dist/home.html'])assert(fs.readFileSync(html,'utf8').indexOf('src="room-tv.js"')<fs.readFileSync(html,'utf8').indexOf('src="room.js"'),'Both room pages load player first');
+console.log('TV rotation, bounded failure, gesture recovery, hidden pause, contained perspective and both entrypoints passed');

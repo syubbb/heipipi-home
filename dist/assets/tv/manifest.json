@@ -1,0 +1,179 @@
+{
+  "version": 5,
+  "poster": "poster-20261028.jpg",
+  "muted": true,
+  "format": {
+    "codec": "H.264 Baseline",
+    "pixelFormat": "yuv420p",
+    "fps": 15,
+    "maxWidth": 480,
+    "maxHeight": 270,
+    "audio": false,
+    "crf": 23,
+    "framing": "complete landscape source frame, no subject crop"
+  },
+  "playlist": [
+    {
+      "id": "upload-01",
+      "src": "room-tv-20261028-01.mp4",
+      "sourceId": "upload-01",
+      "duration": 14.0,
+      "bytes": 637944,
+      "width": 480,
+      "height": 270,
+      "sourceStart": 0,
+      "framing": {
+        "type": "full-landscape-frame"
+      }
+    },
+    {
+      "id": "upload-02",
+      "src": "room-tv-20261028-02.mp4",
+      "sourceId": "upload-02",
+      "duration": 9.27,
+      "bytes": 541244,
+      "width": 480,
+      "height": 270,
+      "sourceStart": 0,
+      "framing": {
+        "type": "full-landscape-frame"
+      }
+    },
+    {
+      "id": "upload-03",
+      "src": "room-tv-20261028-03.mp4",
+      "sourceId": "upload-03",
+      "duration": 9.33,
+      "bytes": 440328,
+      "width": 480,
+      "height": 270,
+      "sourceStart": 0,
+      "framing": {
+        "type": "full-landscape-frame"
+      }
+    },
+    {
+      "id": "upload-04",
+      "src": "room-tv-20261028-04.mp4",
+      "sourceId": "upload-04",
+      "duration": 8.4,
+      "bytes": 511417,
+      "width": 480,
+      "height": 270,
+      "sourceStart": 0,
+      "framing": {
+        "type": "full-landscape-frame"
+      }
+    },
+    {
+      "id": "upload-05",
+      "src": "room-tv-20261028-05.mp4",
+      "sourceId": "upload-05",
+      "duration": 16.13,
+      "bytes": 619433,
+      "width": 480,
+      "height": 270,
+      "sourceStart": 0,
+      "framing": {
+        "type": "full-landscape-frame"
+      }
+    },
+    {
+      "id": "upload-06",
+      "src": "room-tv-20261028-06.mp4",
+      "sourceId": "upload-06",
+      "duration": 12.07,
+      "bytes": 434418,
+      "width": 480,
+      "height": 270,
+      "sourceStart": 0,
+      "framing": {
+        "type": "full-landscape-frame"
+      }
+    },
+    {
+      "id": "upload-07",
+      "src": "room-tv-20261028-07.mp4",
+      "sourceId": "upload-07",
+      "duration": 33.07,
+      "bytes": 933053,
+      "width": 480,
+      "height": 270,
+      "sourceStart": 0,
+      "framing": {
+        "type": "full-landscape-frame"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "upload-01",
+      "originalName": "ydQgLRKcqxPmnpFaPCuBVYoHwlQB087iWHRau9EeMoo.mov",
+      "duration": 14.01,
+      "sha256": "82512a8d21b7c304b02ddfd0cb7ff0e48585712192138636d7b165293efb5d57",
+      "clipIds": [
+        "upload-01"
+      ]
+    },
+    {
+      "id": "upload-02",
+      "originalName": "9gKJpEQjsh3TkQCI5sDjLpg01cRBLoiU9C-Q5vMRXz0.mp4",
+      "duration": 9.3,
+      "sha256": "66b5b61465f8330a733fd1939c377f478c96c0206f50799b365618f7c05c7dd0",
+      "clipIds": [
+        "upload-02"
+      ]
+    },
+    {
+      "id": "upload-03",
+      "originalName": "0N1cW-mpBTHelqtYmzEJ-UYqkPga5MKZ73l3tvGGvyI.mov",
+      "duration": 9.33,
+      "sha256": "727504b3a55a106baa16eb0abb1f2e62f7a58b51d47a1b4a9c1d525b561ea22e",
+      "clipIds": [
+        "upload-03"
+      ]
+    },
+    {
+      "id": "upload-04",
+      "originalName": "EY45xzse_VvCKElFfxNj9_qKofbpY5s5avlReoFH26s.mp4",
+      "duration": 8.4,
+      "sha256": "7ebf3cbe90264f164b011939692f9250b367c6bfe75d85c0a16c89e92690f6e9",
+      "clipIds": [
+        "upload-04"
+      ]
+    },
+    {
+      "id": "upload-05",
+      "originalName": "BR3VqlyUt52RnFRsaO8cuA482vuwvGASHR2_rt6KA-g.mov",
+      "duration": 16.21,
+      "sha256": "a0903bda8ea7d6979d6029f4da449bf38928245ad6b780869b035d40082fff71",
+      "clipIds": [
+        "upload-05"
+      ]
+    },
+    {
+      "id": "upload-06",
+      "originalName": "D8K3Uvugt1eAmGc6ybH3AEKTT2JiZzrgER_24JHjFDM.mp4",
+      "duration": 12.08,
+      "sha256": "ea44d36c1410af6b581780c7749387600cb88c2a7e40f275823b2d83a31ede97",
+      "clipIds": [
+        "upload-06"
+      ]
+    },
+    {
+      "id": "upload-07",
+      "originalName": "w3SkezC_pk7WfMukNvIssz58LRl7FajJ1hrxSUKxp00.mov",
+      "duration": 33.07,
+      "sha256": "68bedd7d455b7fc93225d94e70bf2bb87f3cbd92b895524e4fbaa7916a4c6dd4",
+      "clipIds": [
+        "upload-07"
+      ]
+    }
+  ],
+  "totals": {
+    "sources": 7,
+    "clips": 7,
+    "duration": 102.27,
+    "processedBytes": 4117837
+  }
+}

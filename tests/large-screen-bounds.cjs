@@ -1,0 +1,7 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),s=fs.readFileSync('dist/room.js','utf8');let layout='desktop',paints=0;
+const e={applyHomeLayout:()=>false,yeBlocked:()=>false,Math,W:600,H:820,EY0:-320,EX0:0,EW:600,EH:2100,BGS:1.4,CELL:12,ROWS:48,GX0:42,GX1:558,COLS:44,N:2112,bg:{},document:{documentElement:{getAttribute:()=>layout}},cat:null,npcCollider:null,rabbitCollider:null,extraNPCs:[],gx:()=>0,gy:()=>0,blockedPt:()=>false,paintRoom:()=>paints++};
+vm.createContext(e);vm.runInContext(s.slice(s.indexOf('function roomBaseScale('),s.indexOf('function measure(){')),e);
+e.resizeRoomBounds(3840,2000);assert(e.EH+e.EY0>=2000/.65,'Background height must cover the entire large screen');assert(e.bg.width<=8192&&e.bg.height<=8192,'Background stays within texture dimensions');assert(e.bg.width*e.bg.height<=16020000,'Background stays within raster memory budget');
+let releases=0;e.cat={x:300,y:500,scratchBoard:0,state:'scratchPad'};e.releaseScratchBoard=()=>{releases++};e.panoramaFurnitureBlocked=()=>false;
+const before=paints;e.resizeRoomBounds(3840,2600);assert(e.EH+e.EY0>=2600/.65,'Growing only viewport height must extend the floor');assert(paints>before,'Height-only resize repaints');assert.equal(releases,0,'Height-only resize must preserve the current cat action');e.cat=null;
+layout='phone';e.resizeRoomBounds(390,600);assert.equal(e.EH,2100);assert.equal(e.BGS,1.4);console.log('Large-screen background grows with width and height, caps texture memory, and preserves phone raster');

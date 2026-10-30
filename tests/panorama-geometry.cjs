@@ -1,0 +1,6 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');const e={Math,Date,Intl};vm.createContext(e);vm.runInContext(fs.readFileSync('dist/window-scene.js','utf8'),e);
+const g=e.WindowScene.panoramaLayout(215);
+for(const pts of g.objects){const left=Math.min(...pts.map(p=>p[0])),right=Math.max(...pts.map(p=>p[0]));if(left>526&&right<1488)assert(Math.abs(g.project(right,0).x-g.project(left,0).x-(right-left)*g.scale)<1e-6,'Back-wall furniture retains natural aspect ratio');else for(const x of [left,right])assert.equal(g.project(x,0).x,g.project(x,322).x,'Side-wall furniture verticals stay vertical');}
+for(const view of g.windows){assert.equal(view.panes.length,2);for(const p of view.panes){assert(p.width>30&&p.height>90,'Both left and main windows have full glass panes');assert(p.x>=view.bounds.x&&p.x+p.width<=view.bounds.x+view.bounds.width+.001);}}
+const before=JSON.stringify(g.windows);e.WindowScene.panoramaLayout(215);assert.equal(JSON.stringify(e.WindowScene.panoramaLayout(215).windows),before,'Viewport resizing cannot stretch furniture or windows');
+console.log('Back-wall proportions, upright side-wall furniture, two complete glass panes per window, stable geometry');

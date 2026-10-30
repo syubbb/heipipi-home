@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),s=fs.readFileSync('dist/room.js','utf8');
+const meta=JSON.parse(s.match(/const RABBIT_ANIMATION=(.*);/)[1]);const e={roomPlan:null,RABBIT_ANIMATION:meta,SUN:{x:386,y:300},FT:215};vm.createContext(e);
+vm.runInContext(s.slice(s.indexOf('function rabbitSpriteScale('),s.indexOf('function drawRabbitScratch(')),e);
+const key='rabbit_rest_000',baseline=(100/meta.walk.height)*meta.walk.width/meta.frames[key].width;
+assert(Math.abs(e.rabbitSpriteScale(true,key)/baseline-1.2)<.0001,'Resting rabbit is 20% larger');
+assert.equal(e.rabbitSpriteScale(false,'rabbit_walk_000'),100/meta.walk.height,'Walking size unchanged');
+assert(s.includes('function windowViewingSeat()'),'Dedicated seat at corrected reference location');
+vm.runInContext(s.match(/function windowViewingSeat\(\)\{[^\n]+/)[0],e);
+assert.equal(e.windowViewingSeat().x,e.SUN.x,'Seat centered under window');assert.equal(e.windowViewingSeat().y,260,'Seat close to window, on floor');
+console.log('Rabbit resting +20%, walking unchanged; viewing seat centered directly below window');

@@ -1,0 +1,5 @@
+const assert=require('assert'),fs=require('fs'),vm=require('vm');const e={Math};vm.createContext(e);vm.runInContext(fs.readFileSync('dist/room-detail.js','utf8'),e);
+let original=0,paintedShadows=0,rotations=0;const strips=[];const photo={complete:true,naturalWidth:1280,naturalHeight:960},ctx=new Proxy({drawImage:im=>{if(im===photo)original++;},fill:()=>paintedShadows++,rotate:()=>rotations++,rect:(x,y,w,h)=>strips.push({y,h})},{get:(o,k)=>o[k]||(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
+e.RoomDetail.drawMat(ctx,photo,{x:130,y:395,width:176,height:94});assert.equal(paintedShadows,0,'No grey painted rectangle/shadow may extend beyond the fabric');assert.equal(rotations,0,'Mat is placed straight');assert(original>1,'Perspective is rectified from original photo strips, retaining its motif');
+assert(strips.every(p=>Number.isInteger(p.y)&&p.h===1),'Whole pixel rows avoid translucent horizontal seams in the rectified photo');
+console.log('Mat has no grey surround, straight rectified original pattern and clean clipped edges');

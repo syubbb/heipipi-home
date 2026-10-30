@@ -1,0 +1,3 @@
+const assert=require('assert'),fs=require('fs'),vm=require('vm'),e={Math};vm.createContext(e);vm.runInContext(fs.readFileSync('dist/door-gait.js','utf8'),e);
+for(const id of ['cat','dongdong']){const a={id,x:0,y:0,pose:'walk',facilityCare:{door:true,phase:'exitDoor'}},draws=[],c={save(){},restore(){},drawImage(...q){draws.push(q);}};e.DoorGait.draw(c,a,{complete:true,naturalWidth:1536});const normal=id==='dongdong'?100:Math.sqrt(5500/58871.367)*367*.95;assert(Math.abs(draws[0][8]-normal)<.1,'Door and ordinary locomotion must share body height: '+id);}
+console.log('Doorway and normal walking body heights agree for black and Dongdong');

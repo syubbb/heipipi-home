@@ -1,0 +1,257 @@
+{
+  "image": "litter-walk-black-v1.png",
+  "width": 1536,
+  "height": 1024,
+  "columns": 4,
+  "rows": 2,
+  "cellWidth": 384,
+  "cellHeight": 512,
+  "format": "RGBA",
+  "alphaCropThreshold": 1,
+  "visibleCropThreshold": 16,
+  "coordinateConvention": "Crop x/y are global atlas pixels; width/height use exclusive right/bottom. anchorX and ground are relative to alphaCrop. Body anchor is midpoint of strong-alpha body span around 36% of visible height; ground is exclusive bottom of visible alpha>=16 bounds.",
+  "sourceFile": "C:\\Users\\USER\\.codex\\generated_images\\01a18735-7ebb-74d0-8b8a-d828d019a0f3\\exec-59a7066c-2f17-4a62-bf43-5f5cf58adec1.png",
+  "sha256": "e275f203a7a33b0e14ab8785a8bd3f30be7e34535eed97035237a4dfe7f76366",
+  "zeroAlphaFraction": 0.7132453918457031,
+  "maxAlpha": 254,
+  "frames": [
+    {
+      "index": 0,
+      "name": "away-0",
+      "direction": "away",
+      "phase": 0.0,
+      "cell": {
+        "x": 0,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 107,
+        "y": 49,
+        "width": 267,
+        "height": 443
+      },
+      "visibleCrop": {
+        "x": 112,
+        "y": 53,
+        "width": 202,
+        "height": 429
+      },
+      "anchorX": 120.0,
+      "ground": 433,
+      "anchorXInCell": 227.0,
+      "groundInCell": 482,
+      "visibleHeight": 429
+    },
+    {
+      "index": 1,
+      "name": "away-1",
+      "direction": "away",
+      "phase": 0.25,
+      "cell": {
+        "x": 384,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 385,
+        "y": 33,
+        "width": 327,
+        "height": 454
+      },
+      "visibleCrop": {
+        "x": 499,
+        "y": 52,
+        "width": 191,
+        "height": 424
+      },
+      "anchorX": 218.5,
+      "ground": 443,
+      "anchorXInCell": 219.5,
+      "groundInCell": 476,
+      "visibleHeight": 424
+    },
+    {
+      "index": 2,
+      "name": "away-2",
+      "direction": "away",
+      "phase": 0.5,
+      "cell": {
+        "x": 768,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 815,
+        "y": 40,
+        "width": 335,
+        "height": 442
+      },
+      "visibleCrop": {
+        "x": 880,
+        "y": 43,
+        "width": 175,
+        "height": 437
+      },
+      "anchorX": 153.5,
+      "ground": 440,
+      "anchorXInCell": 200.5,
+      "groundInCell": 480,
+      "visibleHeight": 437
+    },
+    {
+      "index": 3,
+      "name": "away-3",
+      "direction": "away",
+      "phase": 0.75,
+      "cell": {
+        "x": 1152,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 1161,
+        "y": 32,
+        "width": 305,
+        "height": 452
+      },
+      "visibleCrop": {
+        "x": 1263,
+        "y": 40,
+        "width": 193,
+        "height": 442
+      },
+      "anchorX": 188.5,
+      "ground": 450,
+      "anchorXInCell": 197.5,
+      "groundInCell": 482,
+      "visibleHeight": 442
+    },
+    {
+      "index": 4,
+      "name": "toward-0",
+      "direction": "toward",
+      "phase": 0.0,
+      "cell": {
+        "x": 0,
+        "y": 512,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 86,
+        "y": 568,
+        "width": 292,
+        "height": 393
+      },
+      "visibleCrop": {
+        "x": 89,
+        "y": 573,
+        "width": 237,
+        "height": 386
+      },
+      "anchorX": 136.0,
+      "ground": 391,
+      "anchorXInCell": 222.0,
+      "groundInCell": 447,
+      "visibleHeight": 386
+    },
+    {
+      "index": 5,
+      "name": "toward-1",
+      "direction": "toward",
+      "phase": 0.25,
+      "cell": {
+        "x": 384,
+        "y": 512,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 385,
+        "y": 572,
+        "width": 361,
+        "height": 406
+      },
+      "visibleCrop": {
+        "x": 507,
+        "y": 575,
+        "width": 185,
+        "height": 392
+      },
+      "anchorX": 214.5,
+      "ground": 395,
+      "anchorXInCell": 215.5,
+      "groundInCell": 455,
+      "visibleHeight": 392
+    },
+    {
+      "index": 6,
+      "name": "toward-2",
+      "direction": "toward",
+      "phase": 0.5,
+      "cell": {
+        "x": 768,
+        "y": 512,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 775,
+        "y": 526,
+        "width": 299,
+        "height": 448
+      },
+      "visibleCrop": {
+        "x": 831,
+        "y": 572,
+        "width": 227,
+        "height": 393
+      },
+      "anchorX": 188.5,
+      "ground": 439,
+      "anchorXInCell": 195.5,
+      "groundInCell": 453,
+      "visibleHeight": 393
+    },
+    {
+      "index": 7,
+      "name": "toward-3",
+      "direction": "toward",
+      "phase": 0.75,
+      "cell": {
+        "x": 1152,
+        "y": 512,
+        "width": 384,
+        "height": 512
+      },
+      "alphaCrop": {
+        "x": 1229,
+        "y": 574,
+        "width": 267,
+        "height": 402
+      },
+      "visibleCrop": {
+        "x": 1249,
+        "y": 576,
+        "width": 197,
+        "height": 391
+      },
+      "anchorX": 110.0,
+      "ground": 393,
+      "anchorXInCell": 187.0,
+      "groundInCell": 455,
+      "visibleHeight": 391
+    }
+  ],
+  "qualityNotes": [
+    "Strict 4x2 layout; rear row walks away and front row walks toward camera.",
+    "Four visibly different paw phases per row; slow-walk loop suitable at small game scale.",
+    "Native generated RGBA preserved byte-for-byte. Some alpha 1-15 stray pixels remain; visible cat bounds use alpha>=16.",
+    "Per-frame body anchors and ground values compensate modest generated pose alignment variation."
+  ]
+}

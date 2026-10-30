@@ -1,0 +1,165 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="description" content="我是黑屁屁，也可以叫我小雞。我雖然離開了，但我還是能用這個方式陪著我的媽媽。我愛媽媽，也愛我的家人……">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:site_name" content="黑屁屁的家">
+<meta property="og:title" content="黑屁屁的家">
+<meta property="og:description" content="我是黑屁屁，也可以叫我小雞。我雖然離開了，但我還是能用這個方式陪著我的媽媽。我愛媽媽，也愛我的家人……">
+<meta property="og:url" content="https://chick-room.syub.chatgpt.site/">
+<meta property="og:image" content="https://chick-room.syub.chatgpt.site/assets/heipipi-elephant-blue-v3.jpg">
+<meta property="og:image:secure_url" content="https://chick-room.syub.chatgpt.site/assets/heipipi-elephant-blue-v3.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="675">
+<meta property="og:image:alt" content="黑屁屁的正面頭像">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="黑屁屁的家">
+<meta name="twitter:image" content="https://chick-room.syub.chatgpt.site/assets/heipipi-elephant-blue-v3.jpg">
+<link rel="apple-touch-icon" href="assets/heipipi-icon-blue-v2.png">
+<link rel="icon" type="image/png" sizes="600x600" href="assets/heipipi-icon-blue-v2.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#1f222c">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>黑屁屁的家</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: the room fills the whole screen; a translucent status band floats on top and a toy-box toolbar at the bottom.
+   The camera keeps 黑屁屁 inside the clear space between them. */
+:root{
+  --dusk:#1f222c;
+  --glass:rgba(27,29,38,.84);
+  --line:rgba(255,255,255,.09);
+  --panel:rgba(48,52,64,.92);
+  --ink:#f1ebe1;
+  --muted:#aaa69f;
+  --amber:#eab65c;
+  --eye:#c3d86f;
+  --rose:#f08a9d;
+  --display:"LXGW WenKai TC","Kaiti TC","STKaiti",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--dusk);color:var(--ink);font-family:var(--body);overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:none}
+canvas{position:fixed;inset:0;width:100vw;height:100%;display:block;touch-action:none}
+.hud,.tools{position:fixed;left:0;right:0;z-index:5;background:var(--glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hud{top:0;border-bottom:1px solid var(--line);padding-top:calc(env(safe-area-inset-top,0px) + 8px);padding-bottom:8px}
+.tools{bottom:0;border-top:1px solid var(--line);padding-top:8px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px)}
+.inner{max-width:760px;margin:0 auto;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));display:grid;gap:6px}
+.row1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.name{font-family:var(--display);font-size:1.35rem;font-weight:700;display:flex;align-items:baseline;gap:4px;min-width:0}
+.name button{font:inherit;color:var(--eye);background:none;border:0;border-bottom:1px dashed rgba(195,216,111,.45);padding:0;cursor:pointer}
+.name input{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0 6px;width:6em}
+.hbtns{display:flex;gap:6px}
+.chip{font:500 .8rem var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:#4b402a;border-color:var(--amber);color:#fff2d6}
+.lines{display:grid;gap:2px}
+.status{font-family:var(--display);font-size:1.02rem;color:var(--ink);margin:0;min-height:1.35em;line-height:1.35}
+.want{font-size:.82rem;color:var(--muted);margin:0;min-height:1.3em;line-height:1.3}
+.want.on{color:var(--amber);font-weight:500}
+.needs{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.need{display:grid;gap:3px;font-size:.7rem;color:var(--muted);letter-spacing:.04em}
+.need i{display:block;height:5px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
+.need b{display:block;height:100%;border-radius:3px;background:var(--eye);transition:width .4s,background .4s}
+.need.low{color:var(--amber)}.need.low b{background:var(--amber)}
+.need.bad{color:var(--rose)}.need.bad b{background:var(--rose)}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:76px;gap:5px}
+.grid button{font:500 .8rem var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:7px 2px;cursor:pointer;
+  display:grid;grid-template-rows:26px 1fr;justify-items:center;align-items:center;gap:3px;box-sizing:border-box;min-width:0;width:100%;height:100%;transition:transform .1s}
+.grid .tool-label{display:block;line-height:1.25;white-space:nowrap;text-align:center}
+.grid svg{flex-shrink:0}
+.grid button:active{transform:scale(.95)}
+.grid button:focus-visible,.chip:focus-visible{outline:2px solid var(--eye);outline-offset:2px}
+.grid button[aria-pressed="true"]{background:#4b402a;border-color:var(--amber);color:#fff2d6;box-shadow:inset 0 0 0 1px var(--amber),0 0 8px rgba(234,182,92,.18)}
+.credit{margin:0;font-size:.62rem;color:var(--muted);text-align:center;opacity:.7}
+.grid svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:639px){
+  .grid{grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:64px;gap:4px 3px}
+  .grid button{grid-template-rows:20px 1fr;min-width:0;font-size:clamp(10px,2.8vw,12px);line-height:1.2;padding:5px 1px;gap:2px;border-radius:9px}
+  .grid svg{width:20px;height:20px}
+  .tools{padding-top:6px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 6px)}
+}
+@media (min-width:640px){.grid{grid-template-columns:repeat(13,1fr)}}
+.hbtns{flex-wrap:wrap;gap:6px}.camera-picker{display:inline-flex;align-items:center;gap:5px;cursor:pointer}.camera-picker select{font:inherit;color:inherit;background:transparent;border:0;max-width:100px;cursor:pointer}.camera-picker option{color:#302820;background:#fff8ed}#bOverview[aria-pressed="true"],.camera-picker.active{background:#f7d481;color:#332618;box-shadow:0 0 0 2px #e9b44c}.camera-picker:focus-within{outline:2px solid #e9b44c;outline-offset:2px}@media(max-width:480px){.row1{flex-wrap:wrap}.name{white-space:nowrap}.hbtns{gap:4px;flex-wrap:nowrap;width:100%}.camera-picker{gap:2px}.camera-picker select{max-width:86px}}
+/* phone-stage: fixed logical phone canvas, uniformly fitted on every screen. */
+html{background:#14161c;overflow:hidden}
+body{margin:0;position:fixed;left:50%;top:50%;width:390px;height:var(--stage-height,844px);transform:translate(-50%,-50%) scale(var(--stage-scale,1));transform-origin:center;box-shadow:0 0 55px #0007}
+canvas#room{width:100%;height:100%;inset:0}
+.inner{max-width:none;padding-left:14px;padding-right:14px}
+.row1{flex-wrap:wrap}.name{white-space:nowrap}.hbtns{gap:4px;flex-wrap:nowrap;width:100%}
+.camera-picker{gap:2px}.camera-picker select{max-width:86px}
+.grid{grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:64px;gap:4px 3px}
+.grid button{grid-template-rows:20px 1fr;font-size:11px;line-height:1.2;padding:5px 1px;gap:2px;border-radius:9px}
+.grid svg{width:20px;height:20px}.tools{padding-top:6px;padding-bottom:6px}
+.hud{padding-top:8px}.room-heading{width:100%}
+/* Two choices sit immediately above the gather button in either layout. */
+.gather-choices{position:absolute;bottom:calc(100% + 10px);width:200px;box-sizing:border-box;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;background:rgba(37,39,49,.97);border:1px solid #b89b68;border-radius:16px;box-shadow:0 8px 28px #0005;z-index:8}
+.gather-choices[hidden]{display:none}
+.gather-choices button{display:grid;justify-items:center;align-content:center;gap:7px;min-height:82px;padding:10px 6px;border:1px solid #71644e;border-radius:10px;background:#42414a;color:#fff1da;font:500 14px var(--body);cursor:pointer}
+.gather-choices button:hover,.gather-choices button:focus-visible{background:#625139;outline:2px solid var(--amber);outline-offset:1px}
+.gather-choices svg{width:30px;height:30px}
+.sleep-choices button{min-height:96px}
+</style>
+<link rel="stylesheet" href="desktop.css">
+<script src="display.js"></script>
+<script>
+function fitPhoneStage(){const mobile=innerWidth<=639,scale=mobile?innerWidth/390:Math.min(typeof RoomDisplay!=='undefined'&&RoomDisplay.isDesktop()?Infinity:1,innerWidth/390,innerHeight/844);document.documentElement.style.setProperty('--stage-scale',scale);document.documentElement.style.setProperty('--stage-height',(mobile?innerHeight/scale:844)+'px');}
+fitPhoneStage();addEventListener('resize',fitPhoneStage);
+</script>
+
+<canvas id="room" aria-label="黑屁屁的木地板房間，可以點擊互動"></canvas>
+
+<div class="hud" id="hud"><div class="inner">
+  <div class="row1">
+    <div class="name"><button id="nameBtn" type="button">黑屁屁</button><span>的家</span></div>
+    <div class="hbtns">
+      <button class="chip" id="bOverview" aria-pressed="true">全景</button><label class="camera-picker chip"><span>近看</span><select id="cameraTarget" aria-label="近看哪隻貓咪"><option value="" selected disabled>選擇貓咪</option><option value="cat">黑屁屁</option><option value="ye">爺</option><option value="rabbit">小兔子</option></select></label>
+      <button class="chip" id="bSound" aria-pressed="true">聲音 開</button>
+    </div>
+  </div>
+  <div class="lines">
+    <p class="status" id="status" aria-live="polite">在房間裡等你</p>
+    <p class="want" id="want">點地板叫牠過來，滑動摸摸；長按貓咪可抓起拖曳，放手即可放下</p>
+  </div>
+  <div class="needs" id="needs"></div>
+</div></div>
+
+<nav class="tools" id="tools"><div id="sleepChoices" class="gather-choices sleep-choices" role="dialog" aria-label="選擇睡覺的地方" hidden>
+ <button id="bSleepBox" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12h22v17H5z" fill="#b98e57" stroke="#eac888"/><path d="m5 12-3-7 12 2 2 5 2-5 12-2-3 7" fill="#d6b17b"/><path d="M8 15h16v11H8z" fill="#695035"/></svg><span>紙箱</span></button>
+ <button id="bSleepMat" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="4" width="30" height="23" rx="4" fill="#f1adc0" stroke="#fbe5d9"/><path d="m9 14-1-7 5 4h5l5-4-1 7q4 11-6 11T9 14" fill="#262c2e"/><circle cx="12" cy="16" r="1.7" fill="#d4de9e"/><circle cx="20" cy="16" r="1.7" fill="#d4de9e"/><path d="m15 23-5 3v-6l5 3 6-3v6z" fill="#dc727f"/></svg><span>黑貓<br>腳踏墊</span></button>
+</div><div id="gatherChoices" class="gather-choices" role="dialog" aria-label="選擇集合方式" hidden>
+ <button id="bGatherPhoto" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9h6l2-4h8l2 4h6v19H4z" fill="#e5c18b" stroke="#967451"/><circle cx="16" cy="18" r="7" fill="#41494d"/><circle cx="16" cy="18" r="4" fill="#9fc9c5"/><circle cx="25" cy="12" r="1.5" fill="#fff3d8"/></svg><span>拍照</span></button>
+ <button id="bGatherTV" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="5" width="28" height="20" rx="3" fill="#41494d" stroke="#dab983"/><path d="M12 28h8m-4-3v3" stroke="#dab983" stroke-width="2"/><path d="M16 21C-1 12 14 6 16 12c2-6 17 0 0 9" fill="#f1a0b1"/></svg><span>看電視</span></button>
+</div><div class="inner"><div class="grid" role="toolbar">
+  <button id="bHand" aria-pressed="true"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#e7b786" d="M10 19V9a2 2 0 0 1 4 0v7-9a2 2 0 0 1 4 0v9-7a2 2 0 0 1 4 0v10-6a2 2 0 0 1 4 0v9c0 6-3 9-8 9-4 0-7-3-9-6l-4-5a2 2 0 0 1 3-3z"/><path fill="#ee9eac" stroke="none" d="M6 4C1-1 0 9 7 12 15 7 11 0 6 4"/></svg><span class="tool-label">撫摸</span></button>
+  <button id="bWand" aria-pressed="false"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path stroke="#e9b44c" stroke-width="3" d="M5 28 22 10"/><path stroke="#9bd7d0" d="M22 10q9 0 7-6"/><path fill="#ee9eac" d="m20 3 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><circle fill="#f7d481" cx="8" cy="7" r="2"/></svg><span class="tool-label">逗貓棒</span></button>
+  <button id="bTreat" aria-pressed="false"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#f4b66b" d="m4 24 17-18 7 7L11 30z"/><path fill="#75c9b9" d="m17 10 4-4 7 7-4 4z"/><path stroke="#fff1ce" stroke-width="2" d="m9 23 9-9"/><path fill="#ee9eac" d="M21 5q-2-6 3-4l3 3"/></svg><span class="tool-label">貓條</span></button>
+  <button id="bBelly"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><ellipse fill="#252932" cx="16" cy="19" rx="9" ry="10"/><ellipse fill="#efa9b5" cx="16" cy="20" rx="4.5" ry="6"/><path fill="#252932" d="m9 11-1-8 7 4 3-1 6-3-1 9"/><circle fill="#e9d68b" stroke="none" cx="13" cy="10" r="1"/><circle fill="#e9d68b" stroke="none" cx="20" cy="10" r="1"/><path d="m8 17-4-3m20 3 4-3M10 27l-4 2m16-2 4 2"/></svg><span class="tool-label">摸肚肚</span></button>
+<button id="bBellyStroke" style="display:none"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><ellipse fill="#efa9b5" cx="15" cy="21" rx="10" ry="7"/><path fill="#e7b786" d="M12 19V8a2 2 0 0 1 4 0v7l4-1 6 6-3 8-9-1-6-6z"/><path d="M4 9q3-4 6-3m15 3q3 2 3 5"/></svg><span class="tool-label">輕摸</span></button>
+  <button id="bFood"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#ee9eac" d="M3 17h26l-4 12H7z"/><ellipse fill="#fff1ce" cx="16" cy="17" rx="13" ry="4"/><g fill="#b57c45"><circle cx="10" cy="15" r="2"/><circle cx="16" cy="13" r="2"/><circle cx="22" cy="15" r="2"/></g><path stroke="#fff1ce" d="M12 24h8"/></svg><span class="tool-label">餵食</span></button>
+  <button id="bWater"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#7dc9df" d="M16 2S8 11 8 17a8 8 0 0 0 16 0C24 11 16 2 16 2Z"/><path stroke="#ecffff" d="M12 16q-2 5 3 6"/><path fill="#75c9b9" d="M3 26h26l-4 4H7z"/></svg><span class="tool-label">喝水</span></button>
+  <button id="bLitter"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#75c9b9" d="M3 14h26v14H3z"/><path fill="#e5ce9b" d="M5 14h22v6H5z"/><path fill="#e9b44c" d="m18 3 3 1-3 11-5-2z"/><path stroke="#e9b44c" stroke-width="2" d="m20 4 2-3"/><path stroke="#81714e" d="m8 17 3 1m8-1 3 1"/></svg><span class="tool-label">上廁所</span></button>
+  <button id="bSun"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle fill="#e9b44c" cx="16" cy="16" r="7"/><g stroke="#f7d481" stroke-width="2"><path d="M16 2v3m0 22v3M2 16h3m22 0h3M6 6l2 2m16 16 2 2M6 26l2-2M24 8l2-2"/></g></svg><span class="tool-label">曬太陽</span></button>
+  <button id="bSleep" type="button" aria-expanded="false" aria-controls="sleepChoices"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#a6a1d8" d="M24 22A12 12 0 0 1 12 3c-14 2-12 24 3 25a12 12 0 0 0 9-6Z"/><path fill="#f7d481" stroke="none" d="m24 3 1 4 4 1-4 1-1 4-1-4-4-1 4-1z"/></svg><span class="tool-label">睡覺</span></button>
+  <button id="bWalk"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><g fill="#75c9b9"><ellipse cx="10" cy="22" rx="6" ry="5"/><ellipse cx="5" cy="15" rx="2" ry="3"/><ellipse cx="10" cy="13" rx="2" ry="3"/><ellipse cx="15" cy="15" rx="2" ry="3"/></g><g fill="#e9b44c"><ellipse cx="23" cy="12" rx="5" ry="4"/><ellipse cx="19" cy="6" rx="1.8" ry="2.5"/><ellipse cx="23" cy="4" rx="1.8" ry="2.5"/><ellipse cx="27" cy="6" rx="1.8" ry="2.5"/></g></svg><span class="tool-label">散步</span></button>
+<button id="bRestTurn" style="display:none"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path stroke="#75c9b9" stroke-width="2.5" d="M6 13a11 11 0 1 1 0 10"/><path fill="#75c9b9" d="m3 6 3 7 7-3"/><path fill="#252932" d="m11 22 1-8 5 3 5-3 1 9q-6 6-12-1Z"/><path d="M14 23h6"/></svg><span class="tool-label">換姿勢</span></button>
+<button id="bToast"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#c58b4b" d="M6 13C-3 0 35 0 26 13v16H6Z"/><path fill="#fff1ce" d="M10 13C3 4 29 4 22 13v12H10Z"/><g fill="#e9b44c" stroke="none"><circle cx="13" cy="14" r="1"/><circle cx="19" cy="19" r="1"/><circle cx="14" cy="23" r="1"/></g></svg><span class="tool-label">坐墊<br>休息</span></button>
+  <button id="bGather" type="button" aria-expanded="false" aria-controls="gatherChoices"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M18 9 28 6l2 6-9 4" fill="#e9b44c" stroke="#79583e" stroke-width="1.2" stroke-linejoin="round"/><path d="m24 7 1 5" fill="none" stroke="#fff1ce" stroke-width="2"/><circle cx="12" cy="19" r="9" fill="#e9b44c" stroke="#79583e" stroke-width="1.2"/><circle cx="12" cy="19" r="5" fill="#f7d481"/><path d="M7 16q1-3 4-3" fill="none" stroke="#fff1ce" stroke-width="1.8" stroke-linecap="round"/><path d="m7 26-2 3-3-2 2-3" fill="none" stroke="#cdb99d" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="tool-label">集合</span></button>
+  <button id="bEle"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#75c9b9" d="M4 22V12a10 10 0 0 1 20 0v3q5 0 5 5v6h-4v-6h-3v9h-5v-5h-7v5H5v-7z"/><ellipse fill="#a2ddd0" cx="12" cy="13" rx="6" ry="7"/><circle fill="#252932" stroke="none" cx="22" cy="11" r="1.5"/><path stroke="#ee9eac" stroke-width="3" d="M8 11v5"/></svg><span class="tool-label">大象<br>寶寶</span></button>
+</div></div></nav>
+
+<script src="assets/suncalc.js"></script>
+<script src="window-scene.js"></script>
+<script src="room-detail.js"></script>
+<script src="room-layout.js"></script>
+<script src="door-gait.js"></script>
+<script src="outdoors.js"></script>
+<script src="room-tv.js"></script>
+<script src="tv-reactions.js"></script>
+<script src="tv-cats.js"></script>
+<script src="gather-menu.js"></script>
+<script src="room.js"></script>

@@ -1,0 +1,21 @@
+const fs=require('fs');let p='dist/outdoors.js',s=fs.readFileSync(p,'utf8');
+s=s.replace('return {sun,moon,illum,flags,cloud,code,strength,stale,current};',`const moonStrength=!stale&&sun.altitude<-.08&&moon.altitude>0&&!flags.rain&&!flags.drizzle&&!flags.snow&&!flags.fog?Math.sin(moon.altitude)*illum.fraction*(1-cloud/100)*.42:0;
+ return {sun,moon,illum,flags,cloud,code,strength,moonStrength,stale,current};`);
+s=s.replace('c.beginPath();c.rect(784,36,117,210);c.rect(920,36,142,210);c.clip();',`// Tint all fabric, including the translucent strips hiding the outer glass.
+ c.save();c.globalCompositeOperation='multiply';
+ const overcast=s.cloud/100*.24,shade=clamp(night*.72+overcast,0,.84);
+ c.fillStyle='rgba(77,99,140,'+shade+')';
+ c.fillRect(670,0,114,334);c.fillRect(1062,0,152,334);
+ c.fillStyle='rgba(119,137,161,'+(night*.25+overcast*.5)+')';c.fillRect(784,15,295,21);c.fillRect(784,246,295,26);
+ c.restore();
+ c.beginPath();c.rect(784,36,117,210);c.rect(920,36,142,210);c.clip();`);
+const a=s.indexOf("button.style.cssText='position:fixed;"),b=s.indexOf(' updateUI();refresh();',a);
+s=s.slice(0,a)+`button.style.cssText='font:10px var(--body,system-ui);color:var(--muted,#aaa69f);background:none;border:0;padding:3px 0;margin-left:auto;text-align:right;cursor:pointer;white-space:nowrap;line-height:1.4';button.onclick=showDetails;button.setAttribute('aria-label','竹圍窗外天氣與每小時太陽月亮位置');
+ const name=document.querySelector('.row1 .name');
+ if(name){const heading=document.createElement('div');heading.className='room-heading';heading.style.cssText='display:flex;align-items:center;gap:14px;flex:1;min-width:0;flex-wrap:wrap';name.parentNode.insertBefore(heading,name);heading.append(name,button);}else document.body.append(button);
+`+s.slice(b);fs.writeFileSync(p,s);
+p='dist/room.js';s=fs.readFileSync(p,'utf8');s=s.replace(" if(window.RoomOutdoors&&RoomOutdoors.state().strength<=.18)return;\n c.save();if(window.RoomOutdoors)c.globalAlpha=RoomOutdoors.state().strength;c.translate(SUN.x,SUN.y-10);",` const environment=window.RoomOutdoors?RoomOutdoors.state():{strength:1,moonStrength:0};
+ const moonlight=environment.strength<=.18,level=moonlight?environment.moonStrength:environment.strength;
+ if(level<=.01)return;
+ c.save();c.globalAlpha=level;c.translate(SUN.x,SUN.y-10);`);
+s=s.replace("light.addColorStop(0,'rgba(255,245,202,.65)');light.addColorStop(1,'rgba(255,239,180,.38)');", "light.addColorStop(0,moonlight?'rgba(191,218,255,.6)':'rgba(255,245,202,.65)');light.addColorStop(1,moonlight?'rgba(169,203,250,.25)':'rgba(255,239,180,.38)');");fs.writeFileSync(p,s);

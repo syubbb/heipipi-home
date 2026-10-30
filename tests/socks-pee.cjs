@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
+let setup=fs.readFileSync(path.join(__dirname,'ground-actions.cjs'),'utf8').split('for(const a of all)')[0];setup+=';this.engine=e;this.socks=socks;this.all=all;';const host={require,console,__dirname};vm.createContext(host);vm.runInContext(setup,host);const e=host.engine,a=host.socks;
+for(const other of host.all)Object.assign(other,{x:-40,y:780,trafficYield:null,facilityCare:null,path:[]});
+Object.assign(a,{x:270,y:580,face:1,state:'wait',peeDue:0,gatherSlot:null,timer:99});e.updateWalkingNpc(a,0);assert.equal(a.state,'marking');
+e.updateWalkingNpc(a,.55);assert.equal(e.puddles.length,0,'No urine before squatting');e.updateWalkingNpc(a,.15);assert.equal(e.puddles.length,1,'Urine starts during squat, not after animation ends');assert.equal(a.state,'marking','Continues seated pee animation after puddle appears');
+const p=e.puddles[0];e.updateWalkingNpc(a,.5);assert.equal(e.puddles.length,1,'One puddle per pee action');assert.equal(e.puddles[0],p);
+const clip=e.NEW_COMPANION_ASSETS.clips.pee;assert(clip&&clip.sourceStart>=4.2&&clip.sourceEnd<9,'Clip excludes paw digging before and after squat');
+const images=[];for(let i=0;i<clip.count;i++){const key=clip.prefix+String(i).padStart(3,'0');e.IMG[key]={key,complete:true,naturalWidth:480,naturalHeight:270};}
+const c={save(){},restore(){},beginPath(){},ellipse(){},fill(){},translate(){},scale(){},drawImage(im){images.push(im.key);}};a.peeTime=1;e.drawCompanionBody(c,a);a.peeTime=2;e.drawCompanionBody(c,a);assert.equal(images.length,2);assert(images.every(k=>k.startsWith('socks_pee_')));assert.notEqual(images[0],images[1],'Pee action animates with video frames');
+e.updateWalkingNpc(a,clip.duration);assert.notEqual(a.state,'marking','Returns to walking after standing up');assert.equal(e.puddles.length,1,'Finishing does not create another puddle');e.updatePuddles(20);assert.equal(e.puddles.length,0,'Urine still expires after twenty seconds');console.log('Squat-timed pee, single animated action, no digging segments and twenty-second expiry passed');

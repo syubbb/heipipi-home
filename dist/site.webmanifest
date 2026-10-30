@@ -1,0 +1,16 @@
+{
+  "name": "黑屁屁的家",
+  "short_name": "黑屁屁的家",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1f222c",
+  "theme_color": "#1f222c",
+  "icons": [
+    {
+      "src": "assets/heipipi-icon-blue-v2.png",
+      "sizes": "600x600",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

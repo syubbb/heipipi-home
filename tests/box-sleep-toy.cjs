@@ -1,0 +1,18 @@
+const vm=require('vm'),assert=require('assert'),make=require('./room-engine.cjs');
+function setup(){const e=make(19);vm.runInContext(e.source.slice(e.source.indexOf('/* ---------- behaviour ---------- */'),e.source.indexOf('const MOUTH_UP=')),e);Object.assign(e,{needs:{energy:30},pet:{on:false},popMeow(){},sfx:{},cancelLiftHold(){},bump(){},endLift(){},stopGather(){}});e.cat.inside=null;e.cat.carry=null;e.cat.state='idle';e.cat.pose='sit';let pending=[];e.moveTo=(x,y,speed,then)=>{e.cat.state='walk';pending.push(()=>{e.cat.x=x;e.cat.y=y;then?.();});};e.hopTo=(x,y,then)=>{e.cat.state='hop';pending.push(()=>{e.cat.x=x;e.cat.y=y;e.cat.inside='box';then?.();});};e.step=()=>pending.shift()?.();e.pending=()=>pending.length;e.addToy=()=>{const t={id:'ele',name:'大象寶寶',fav:true,size:56,x:280,y:352,carried:false};e.toys.push(t);return t;};return e;}
+let e=setup(),toy=e.addToy();e.cat.carry=toy;toy.carried=true;
+e.goSleep();assert.equal(e.cat.carry,toy,'Carry remains attached on walk to the box');e.step();assert.equal(e.cat.carry,toy,'Carry remains attached while jumping into box');e.step();
+assert.equal(e.cat.act,'sleep');assert.equal(e.cat.pose,'sleep');assert.equal(e.cat.carry,null,'Sleeping cat releases toy beside its curled body');assert(!toy.carried);assert(toy.inBox,'Toy remains nestled in box');assert(toy.x>100&&toy.x<214&&toy.y<332&&toy.y>268);assert.equal(toy.z,0);
+e=setup();toy=e.addToy();e.Math.random=()=>.1;e.goSleep();assert.equal(e.cat.targetToy,toy,'Sleep can choose an available toy');e.step();assert.equal(e.cat.carry,toy,'Sleep pickup actually grabs toy');while(e.pending())e.step();assert.equal(e.cat.act,'sleep');assert(toy.inBox);
+e=setup();toy=e.addToy();toy.held=true;e.Math.random=()=>.1;e.goSleep();assert(!e.cat.targetToy,'Never steals toy held by user');while(e.pending())e.step();assert.equal(e.cat.act,'sleep');
+e=setup();toy=e.addToy();toy.carried=true;e.cat.carry=toy;e.Math.random=()=>.1;e.carryAround(0);assert.equal(e.cat.carry,toy);while(e.pending())e.step();assert.equal(e.cat.act,'sleep','Wandering with a toy sometimes ends in box sleep');assert(toy.inBox);
+e.interrupt();assert.equal(e.cat.act,null);assert.equal(e.cat.then,null);assert.equal(e.cat.carry,null);assert(toy.inBox,'Sleeping toy stays in box when waking');
+e=setup();toy=e.addToy();e.cat.carry=toy;toy.carried=true;e.interrupt();assert(!toy.carried);assert.equal(e.cat.carry,null,'Manual command releases carried toy safely');assert(!e.blockedPt(toy.x,toy.y));
+e=setup();toy=e.addToy();toy.carried=true;e.cat.carry=toy;e.goSleep();while(e.pending())e.step();
+vm.runInContext(e.source.slice(e.source.indexOf('function updateToys(dt){'),e.source.indexOf('function updateParts(dt){')),e);
+const nested={x:toy.x,y:toy.y};for(let i=0;i<200;i++)e.updateToys(.05);
+assert.equal(toy.x,nested.x,'Box toy stays beside sleeping cat through physics ticks');assert.equal(toy.y,nested.y,'Box collision must not eject sleeping toy');assert.equal(toy.z,0);
+e.cat.carry=toy;toy.carried=true;e.dropCarry();assert(!toy.inBox,'Taking toy outside releases nesting state');
+e=setup();toy=e.addToy();toy.carried=true;e.cat.carry=toy;e.needs.potty=0;e.Math.random=()=>.1;e.goLitter=()=>{e.urgent='litter';};e.carryAround(0);assert.equal(e.urgent,'litter','Urgent toilet need overrides optional toy sleep');assert(!toy.carried);
+e=setup();toy=e.addToy();toy.carried=true;e.cat.carry=toy;e.needs.thirst=0;e.Math.random=()=>.1;e.goDrink=()=>{e.urgent='drink';};e.carryAround(0);assert.equal(e.urgent,'drink','Urgent thirst overrides optional toy sleep');
+console.log('Toy sleep: carried walk and jump, optional pickup, held exclusion, nest placement, random return and interruption passed');
