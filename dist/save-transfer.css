@@ -1,0 +1,13 @@
+/* 匯入進度 (save transfer) — all styles for the import UI live here. 美術總監 can restyle freely. */
+/* Button sits in the HUD chip row next to 聲音 (inherits .chip look); .hpp-floating is the fallback when no HUD exists. */
+#hpp-import-btn.hpp-in-hud{opacity:.8}
+#hpp-import-btn.hpp-in-hud:hover{opacity:1}
+#hpp-import-btn.hpp-floating{position:fixed;right:calc(8px + env(safe-area-inset-right));top:calc(8px + env(safe-area-inset-top));z-index:9000;
+  font:12px/1 "Noto Sans TC",sans-serif;padding:6px 10px;border:1px solid rgba(0,0,0,.2);border-radius:999px;background:rgba(255,255,255,.8);color:#333;cursor:pointer}
+#hpp-import-overlay{position:fixed;inset:0;z-index:9001;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center}
+#hpp-import-panel{width:min(92vw,420px);background:#fff;color:#222;border-radius:12px;padding:14px;font:14px/1.5 "Noto Sans TC",sans-serif;box-shadow:0 6px 30px rgba(0,0,0,.3)}
+#hpp-import-panel textarea{background:#fff;color:#222;border:1px solid #bbb;border-radius:6px;width:100%;height:8em;box-sizing:border-box;font:12px monospace;margin:8px 0}
+#hpp-import-panel .hpp-msg{min-height:1.5em;color:#b00020}
+#hpp-import-panel .hpp-actions{display:flex;gap:8px;justify-content:flex-end}
+#hpp-import-panel button{color:#222;font:inherit;padding:6px 14px;border-radius:8px;border:1px solid #bbb;background:#f4f4f4;cursor:pointer}
+#hpp-import-panel button.hpp-primary{background:#333;color:#fff;border-color:#333}
