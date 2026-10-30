@@ -1,7 +1,7 @@
 const assert=require('assert'),fs=require('fs'),vm=require('vm'),make=require('./room-engine.cjs');
 for(const desktop of [false,true]){
  const e=make(92);vm.runInContext(fs.readFileSync('dist/room-layout.js','utf8'),e);
- e.document={documentElement:{getAttribute:()=>desktop?'desktop':'phone'}};e.H=1220;e.FT=360;e.EX0=desktop?-800:-150;e.EW=desktop?2200:900;
+ e.document={documentElement:{getAttribute:()=>desktop?'desktop':'phone'}};if(!desktop)e.location={search:'?layout=v129'};e.H=1220;e.FT=360;e.EX0=desktop?-800:-150;e.EW=desktop?2200:900;
  assert.equal(typeof e.applyHomeLayout,'function','Furniture renderer and collision share a responsive apply step');
  e.applyHomeLayout();vm.runInContext('this.plan=roomPlan;this.targets=[SUN,BOX_OUT,{x:FAVOURITE_MAT.x,y:FAVOURITE_MAT.y+26},LIT_OUT];',e);
  for(const a of e.actors)Object.assign(a,{x:e.EX0-300,y:800,path:[],state:'wait',facilityCare:null,gatherSlot:null,trafficYield:null});

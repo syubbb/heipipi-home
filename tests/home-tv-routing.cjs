@@ -1,6 +1,6 @@
 const assert=require('assert'),fs=require('fs'),vm=require('vm'),make=require('./room-engine.cjs');
 for(const desktop of [false,true])for(const seed of [5,31,84,109]){
- const e=make(seed);e.H=1220;e.FT=360;e.EX0=desktop?-800:-150;e.EW=desktop?2200:900;e.document={documentElement:{getAttribute:()=>desktop?'desktop':'phone'}};
+ const e=make(seed);e.H=1220;e.FT=360;e.EX0=desktop?-800:-150;e.EW=desktop?2200:900;e.document={documentElement:{getAttribute:()=>desktop?'desktop':'phone'}};if(!desktop)e.location={search:'?layout=v129'};
  vm.runInContext(fs.readFileSync('dist/room-layout.js','utf8'),e);e.applyHomeLayout();vm.runInContext('this.plan=roomPlan;',e);
  for(const [i,a]of e.actors.entries())Object.assign(a,{x:e.plan.mainAisle.x+(i%2?80:-80),y:870+i*55,state:'wait',path:[],time:0,facilityCare:null,gatherSlot:null,trafficYield:null});
  vm.runInContext(fs.readFileSync('dist/tv-cats.js','utf8'),e);

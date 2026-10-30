@@ -2,7 +2,7 @@ const assert=require('assert'),fs=require('fs'),vm=require('vm');
 assert(fs.existsSync('dist/room-layout.js'),'Approved responsive room geometry must exist');
 const e={Math};vm.createContext(e);vm.runInContext(fs.readFileSync('dist/room-layout.js','utf8'),e);
 for(const desktop of [false,true]){
- const p=e.RoomLayout.create({desktop,left:desktop?-800:-150,width:desktop?2200:900});
+ const p=e.RoomLayout.create({desktop,layout:desktop?undefined:'v129',left:desktop?-800:-150,width:desktop?2200:900});
  assert.equal(p.box.x,p.mat.x,'Original rug follows centered box');
  assert(p.mat.y>p.box.front&&p.mat.y-p.mat.height/2>=p.box.front,'Rug clears box front');
  assert.equal(p.bowl.y,p.water.y);assert(p.water.x-p.bowl.x>=150&&p.water.x-p.bowl.x<=200,'Dining pair a little wider, still adjacent');
