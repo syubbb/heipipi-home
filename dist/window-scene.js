@@ -406,8 +406,15 @@ function draw(c,s,date,g,reduced=false){
   // Cancel the frame's unequal scaling; crop one uniformly scaled exterior.
   const exteriorScale=Math.max(w.width/400,w.height/220);
   c.translate(942,138);c.scale(exteriorScale/(w.width/400),exteriorScale/(w.height/220));c.translate(-942,-138);
-  const hx=192*(w.width/400)/exteriorScale,hy=102*(w.height/220)/exteriorScale;
-  const span=w.fitBodies?{x0:Math.max(752,942-hx+16),x1:Math.min(1124,942+hx-16),y0:Math.max(45,138-hy+16),y1:Math.min(145,138+hy-16)}:null;
+  const skyX=wx=>942+(wx-w.x-(w.width/400)*200)/exteriorScale,skyY=wy=>138+(wy-w.y-(w.height/220)*110)/exteriorScale;
+  let span=null;
+  if(w.fitBodies){
+   const margin=w.bodyMargin==null?0:w.bodyMargin,curtainX=28*(w.width/400),curtainY=8*(w.height/220),glowR=44*exteriorScale,discR=11*exteriorScale,pad=Math.max(glowR,discR+margin);
+   const x0=w.x+curtainX+pad,x1=w.x+w.width-curtainX-pad,y0=w.y+curtainY+pad,y1=w.y+w.height-curtainY-pad;
+   span={x0:skyX(x0),x1:skyX(x1),y0:skyY(y0),y1:skyY(y1)};
+   if(span.x0>span.x1){const mid=(span.x0+span.x1)/2;span.x0=mid-1;span.x1=mid+1;}
+   if(span.y0>span.y1){const mid=(span.y0+span.y1)/2;span.y0=mid-1;span.y1=mid+1;}
+  }
   sky(c,s,l,true,span);landscape(c,l);precipitation(c,l);lightning(c,l);c.restore();
   windowFrame(c,l);c.restore();
   c.save();c.translate(w.x,w.y);c.scale(w.width/400,((w.hem||w.y+w.height+40)-w.y)/306);c.translate(-742,-28);curtains(c,l,g.backdrop);c.restore();return l;
