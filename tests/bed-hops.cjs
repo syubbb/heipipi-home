@@ -62,4 +62,12 @@ cast[0].bedSpot=null;cast[0].j1Landing=false;cast[0].state='idle';bypass.bedSpot
 const resident=fresh('cat');resident.bedSpot=plan.bed.spots.find(s=>s.id==='S4');resident.state='bedRest';
 env.cat=resident;env.extraNPCs=[];env.ye=fresh('ye');env.ye.x=200;env.ye.y=700;env.rabbit=fresh('rabbit');
 assert(env.requestBed(env.ye));assert.equal(env.ye.j1Landing,false,'An occupied S4 sends the next cat to J2');
+env.location={search:'?scene=bed'};
+for(const a of [env.cat,env.ye,env.rabbit,...env.extraNPCs])Object.assign(a,{bedSpot:null,z:0,surface:null,state:'idle'});
+env.extraNPCs=[fresh('socks'),fresh('dongdong')];
+env.placeBedScene.done=false;env.placeBedScene();
+assert(env.bedActors().filter(a=>a.surface==='bed').length>=5);
+for(const a of env.bedActors())a.z=0;
+env.placeBedScene(true);
+assert(env.bedActors().every(a=>a.surface==='bed'&&a.z===160),'A later layout pass puts the bed scene back on the mattress');
 console.log('J1 lands on the walkway, S4 is last, and a sixth cat waits beside the step');

@@ -278,6 +278,7 @@ function applyHomeLayout(){
  OBST.splice(0,OBST.length,{x0:BOX.x-86,x1:BOX.x+86,y0:BOX.back-6,y1:BOX.front+4,h:60,wall:next.box.wall??true},{x0:LIT.x-LIT.width/2,x1:LIT.x+LIT.width/2,y0:LIT.back-4,y1:LIT.front+4,h:42});
  GX0=EX0+42;GX1=EX0+EW-42;GY0=FT+24;GY1=next.floorBottom-28;ROWS=Math.floor((GY1-GY0)/CELL)+1;COLS=Math.floor((GX1-GX0)/CELL)+1;N=COLS*ROWS;panoramaFurnitureCache=null;grid=new Uint8Array(N);for(let i=0;i<N;i++)grid[i]=blockedPt(gx(i),gy(i))?1:0;
  for(const t of toys){const p=next.toys.find(p=>p.id===t.id);if(p&&!t.carried&&!t.held){Object.assign(t,{x:p.x,y:p.y});if(p.size)t.size=p.size;}}
+ try{placeBedScene(true);}catch(e){}
  return true;
 }
 
@@ -1332,10 +1333,11 @@ function requestBed(actor,then){
  if(near&&!landingHeld(actor)&&!s4Held(actor))return startJ1(actor,then);
  actor.j1Landing=false;return startJ2(actor,then)||queueBeside(actor);
 }
-function placeBedScene(){
+function placeBedScene(force){
  let on=false;try{on=typeof location!=='undefined'&&/(?:^|[?&])scene=bed(?:&|$)/.test(location.search||'');}catch(e){}
- if(!on||placeBedScene.done||!roomPlan||!roomPlan.bed||typeof rabbit==='undefined')return;
- const cast=bedActors().filter(Boolean);if(cast.length<5)return;placeBedScene.done=true;
+ if(!on||!roomPlan||!roomPlan.bed)return;
+ let cast;try{cast=bedActors().filter(Boolean);}catch(e){return;}
+ if(cast.length<5||(placeBedScene.done&&!force))return;placeBedScene.done=true;
  for(const a of cast)a.bedSpot=null;
  for(const a of cast){const spot=freeBedSpot(a);if(!spot){const q=bedQueuePoint();Object.assign(a,{x:q.x,y:q.y,z:0,surface:null,state:'bedQueue',pose:'sit',path:[],bedSpot:null});continue;}occupyBed(a,spot);}
 }
